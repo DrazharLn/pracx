@@ -1,3 +1,5 @@
+#include <string>
+
 #define APPVERSION "1.06"
 #define	APPNAME		"PRACX"
 
@@ -31,6 +33,8 @@ public:
 
 	void* m_pWin = NULL;
 
+	std::string m_szMoviePlayerCommand = std::string(".\\movies\\playuv15.exe -software");
+
 	bool Load();
 	void Save();
 	void Show(HINSTANCE hInstance, HWND hwndParent);
@@ -42,6 +46,9 @@ public:
 	static bool IsEnabled();
 
 private:
+	const std::string DEFAULT_MOVIE_PLAYER_COMMAND = std::string(".\\movies\\playuv15.exe -software");
 	static int ReadIniInt(char* pszKey, int iDefault = 0, int iMax = 0, int iMin = 0);
 	static void WriteIniInt(char* pszKey, int iValue, int iDefault = 0);
+	static void CSettings::WriteIniString(char* pszKey, std::string value, std::string defaultvalue);
+	static std::string CSettings::ReadIniString(char* pszKey, std::string szDefault);
 };

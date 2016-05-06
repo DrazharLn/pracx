@@ -92,7 +92,10 @@
 #include <math.h>
 #include <process.h>
 #include <commdlg.h>
-
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
 #include "terran.h"
 #include "PRACXSettings.h"
 
@@ -550,22 +553,33 @@ void __cdecl PRACXShowMovie(const char *pszFileName)
 {
 	PROCESS_INFORMATION pi = { 0 };
 	STARTUPINFO si = { 0 };
-	char szCmd[512];
+	char filename[512];
+	strcat(filename, pszFileName);
 	int i;
+
+	std::string command = m_ST.m_szMoviePlayerCommand;
 
 	// Would be nice to use ffplay or similar, but the videos are encoded with EA's proprietary TQI codec, and as of April 2016, there's no codec available for ffmpeg.
 	// Could reverse engineer playuv15, or the implementation baked into SMAC, I suppose.
-	strcpy(szCmd, ".\\movies\\playuv15.exe -software -xres 2560 -yres 1440 ");
-	strcat(szCmd, pszFileName);
+	i = strlen(filename) - 4;
 
-	i = strlen(szCmd) - 4;
 
-	if (i > -1 && szCmd[i] != '.')
-		strcat(szCmd, ".wve");
+	if (i > -1 && filename[i] != '.')
+		strcat(filename, ".wve");
+
+	command += " .\\movies\\";
+	command += filename;
+
+	// Due to some quantum mechanics bullshit, if I don't write command out to a file, it won't have the right value.
+	std::ofstream logfile;
+	logfile.open("pracx.tmp");
+	logfile << command;
+	logfile.close();
+	std::remove("pracx.tmp");
 
 	m_fPlayingMovie = true;
 
-	if (CreateProcess(".\\movies\\playuv15.exe", szCmd, NULL, NULL, false, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+	if (CreateProcess(NULL, const_cast<char*>(command.c_str()), NULL, NULL, false, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
 	{
 		WaitForSingleObject(pi.hProcess, 2 * 60 * 1000);
 		CloseHandle(pi.hProcess);

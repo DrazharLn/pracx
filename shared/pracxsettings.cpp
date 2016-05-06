@@ -570,6 +570,8 @@ bool CSettings::Load()
 
 	m_fZoomedDetails = ReadIniInt("ZoomedOutShowDetails", m_fZoomedDetails, 1);
 
+	m_szMoviePlayerCommand = ReadIniString("MoviePlayerCommand", m_szMoviePlayerCommand);
+
 	return true;
 }
 
@@ -591,6 +593,9 @@ void CSettings::Save()
 	WriteIniInt("ListScrollLines", m_iListScrollDelta, DEFAULT_LIST_SCROLL_DELTA);
 
 	WriteIniInt("ZoomedOutShowDetails", m_fZoomedDetails, DEFAULT_ZOOMED_DETAILS);
+
+	WriteIniString("MoviePlayerCommand", m_szMoviePlayerCommand, DEFAULT_MOVIE_PLAYER_COMMAND);
+
 }
 
 void CSettings::Show(HINSTANCE hInstance, HWND hwndParent)
@@ -635,6 +640,17 @@ int CSettings::ReadIniInt(char* pszKey, int iDefault, int iMax, int iMin)
 
 	return iRet;
 }
+
+std::string CSettings::ReadIniString(char* pszKey, std::string szDefault)
+{
+	char szValue[1024] = { 0 };
+	
+	GetPrivateProfileString("PRACX", pszKey, szDefault.c_str(), szValue, sizeof(szValue) - 1, ".\\Alpha Centauri.ini");
+	szValue[sizeof(szValue)-1] = 0;
+
+	return std::string(szValue);
+}
+
 	
 void CSettings::WriteIniInt(char* pszKey, int iValue, int iDefault)
 {
@@ -646,6 +662,14 @@ void CSettings::WriteIniInt(char* pszKey, int iValue, int iDefault)
 		sprintf(szValue, "%d", iValue);
 
 	WritePrivateProfileString("PRACX", pszKey, szValue, ".\\Alpha Centauri.ini");
+}
+
+void CSettings::WriteIniString(char* pszKey, std::string value, std::string defaultvalue)
+{
+	if (value == defaultvalue)
+		value = "<DEFAULT>";
+
+	WritePrivateProfileString("PRACX", pszKey, const_cast<char*>(value.c_str()), ".\\Alpha Centauri.ini");
 }
 
 void CSettings::Close()
