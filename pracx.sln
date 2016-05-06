@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prac", "prac\prac.vcxproj", "{F3A886E0-A5A6-46B4-8AF8-21E9AE5120AE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prax", "prax\prax.vcxproj", "{EC089263-8EAD-47A9-987F-FAD88CCC4D88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pracxpatch", "pracxpatch\pracxpatch.vcxproj", "{C0CE4E45-9733-428E-9E92-07AC6DF1EB9E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3A886E0-A5A6-46B4-8AF8-21E9AE5120AE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F3A886E0-A5A6-46B4-8AF8-21E9AE5120AE}.Debug|Win32.Build.0 = Debug|Win32
+		{F3A886E0-A5A6-46B4-8AF8-21E9AE5120AE}.Release|Win32.ActiveCfg = Release|Win32
+		{F3A886E0-A5A6-46B4-8AF8-21E9AE5120AE}.Release|Win32.Build.0 = Release|Win32
+		{F3A886E0-A5A6-46B4-8AF8-21E9AE5120AE}.Release|Win32.Deploy.0 = Release|Win32
+		{EC089263-8EAD-47A9-987F-FAD88CCC4D88}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EC089263-8EAD-47A9-987F-FAD88CCC4D88}.Debug|Win32.Build.0 = Debug|Win32
+		{EC089263-8EAD-47A9-987F-FAD88CCC4D88}.Release|Win32.ActiveCfg = Release|Win32
+		{EC089263-8EAD-47A9-987F-FAD88CCC4D88}.Release|Win32.Build.0 = Release|Win32
+		{C0CE4E45-9733-428E-9E92-07AC6DF1EB9E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C0CE4E45-9733-428E-9E92-07AC6DF1EB9E}.Debug|Win32.Build.0 = Debug|Win32
+		{C0CE4E45-9733-428E-9E92-07AC6DF1EB9E}.Release|Win32.ActiveCfg = Release|Win32
+		{C0CE4E45-9733-428E-9E92-07AC6DF1EB9E}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

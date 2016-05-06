@@ -1,0 +1,126 @@
+PRACX Change Log
+================
+
+v1.07 (04/21/2016)
+==================
+* Change: No longer becomes windowed when window loses focus.
+* Change: TAB no longer toggles windowed/full-screen.
+* Change: ALT+ENTER now toggles windowed/full-screen mode.
+* Fix: May fix colour calibration problems.
+--DrazharLn
+
+v1.06 (01/18/2015)
+==================
+*Compiled for XP compatibility
+*Install script now actually creates the backup directory
+*PRACX Preferences screen now shows the correct PRACX version
+
+v1.05 (01/16/2015)
+==================
+*Fixed lockup when zooming very large maps.
+*Fixed incorrect computation of lower vertical scroll bound.
+*Statically linked RTL to remove dependency on RTL DLL.
+
+v1.04 (12/25/2014)
+==================
+*Significantly improved zoom level calculation.
+
+v1.03 (12/18/2014)
+==================
+*Re-enabled scroll wheel zoom (accidentally disabled in 1.02).
+
+v1.02 (12/17/2014)
+==================
+*Fixed incorrect resource calculation in Release build;
+*Added removal of GOG <ALT-TAB> blocking to installation;
+*Fixed crash when Disabled=1.
+
+v1.01 (12/10/2014)
+=================
+Minor fixes to the v1.0 release:
+*Fixed "WindowsFileBox=1" .ini setting causing full screen to switch to windowed mode on load/save;
+*Fixed <V>iew mode not displaying tile info on mouse-over in SMAX;
+*Fixed scaling issue with resource icons in Resource Mode for wide aspect ratios;
+*Fixed "Please don't leave" dialog showing up after switching between windowed and full screen mode;
+*Improved Zoom Increment calculation so that 0 zoom always lies exactly in the middle.  A side effect is the number of Zoom Increments must now always be odd.  Even values will be rounded up to the nearest odd number;
+*Added this note that <ESC> is the key to use to skip movies now;
+*Window close box now acts as though the <ESC> key was pressed instead of minimizing the window.
+
+v1.0 (12/9/2014)
+================
+No big bug fixes or new features, just some minor UI tweaks for things that annoyed me.  The patch is fully compatible with SMAC, SMAX, and Yitzi's patches (last tested against v3.3B).
+
+Windowed/Full Screen
+--------------------
+*Toggles between Full Screen and Windowed mode;
+*Window is resizable;
+*Configurable Full Screen resolution (any resolution can be used);
+*Automatically switches system back to native resolution when windowed;
+*<TAB> key toggles for systems that don't like <ALT-TAB> (like mine for some reason);
+*DirectDraw .ini setting obsolete--DirectDraw is used only for movies;
+*Opening and in game movies are fully compatible and no longer block <ALT-TAB>.
+
+Scrolling
+---------
+*Pixel-level scrolling (previously had to scroll at least a tile at a time);
+*Right-Click and drag scrolling added;
+*Edge scroll zones scroll faster the closer to the edge the mouse is;
+*Configurable zone sizes and scroll speed. "Min Scroll Speed" setting is the speed of scrolling when the mouse just enters the zone, and "Max" is the speed with the mouse fully against the edge of the screen/window.
+
+Zooming
+-------
+*Pixel-level re-centering--no more screen zigzag when scrolling in and out;
+*Automatically sets reasonable min, max, and increment values for the current resolution;
+*Mouse wheel zooms in and out;
+*Configurable # of increments between min and max zoom;
+*Resolves black areas after zooming defect;
+*Details (units, cities, improvements, etc.) are now shown even when fully zoomed out--can be turned off in Prefs if that causes anyone performance issues.
+
+Resource Modes
+--------------
+*<ALT-R> cycles between displaying:
+  --Normal Mode;
+  --Current Yield: Displays what each tile would produce with its current improvements (if any);
+  --Potential Yield: Displays each tile's food as if it had a farm, production as if it had a mine, and energy as if it had solar panels;
+*Yields are displayed as though for a faction with no current max resource per tile limits--its main purpose is to make it easier to see where to place a city.
+
+Terrain Modes
+-------------
+*<ALT-T> cycles between displaying:
+  --Normal Mode;
+  --Faction Ownership Mode: Displays tiles colored by who owns them, if anyone;
+  --Elevation Mode: Displays highest elevations as dark red and lowest as white;
+  --Rainfall Mode: Displays wettest areas as dark green and driest as while;
+  --Rockiness Mode: Displays rockiest areas as dark gray and flattest as white;
+
+Miscellaneous
+-------------
+*In view mode (key <V>), mouse over for unit and terrain info (don't have to Shift-Right Click);
+*In city mode, unworked tiles show their potential yields in grey.  Can be turned off temporarily by holding <SHIFT>, or permanently in Prefs--in which case hold <SHIFT> will display the yields rather than hiding them;
+*New in-game menu and prefs window to manage the new features.
+*1st mode of existing <T> cycle now hides forests and fungus so you can see what's under them.
+*Mouse wheel controls zooming when the map is shown, but controls list scrolling when a list window is shown.
+
+PRACX Hotkey Reference
+======================
+<TAB>      Toggle fullscreen/windowed
+<ALT-R>    Cycle resource display mode
+<ALT-T>    Cycle terrain display mode
+<SHIFT>    On city screen, show or hide unworked resources depending on the default setting
+<ESC>      Skip movies
+
+Disabling/Uninstalling
+======================
+The entire patch may be temporarily disabled by setting "Disabled=1" in the [PRACX] section of Alpha Centauri.Ini in the application's directory.  It may be permanently disabled by deleting prac.dll and prax.dll in the application's directory or by uninstalling.
+
+Acknowledgements
+===============
+Thanks to everyone at http://alphacentauri2.info for their comments and suggestions, and specially to Yitzi and Scient for sharing research from their patches.
+
+Legal
+====
+Everyone is free to use, distribute, and modify this patch with no limitations, including bundling it in other patches and modifying the source code.
+
+
+
+
