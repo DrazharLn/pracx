@@ -1,8 +1,6 @@
 /*
  * PlotinusRedux's GUI improvements and renderer for SMACX
  *
- * PRACX v1.07
- *
  * This library is intended to be imported by the SMAC binary and to then cause
  * SMAC to call functions in this library, sometimes instead of certain of its
  * traditional components, sometimes purely in addition.
