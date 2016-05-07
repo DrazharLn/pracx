@@ -568,7 +568,7 @@ void __cdecl PRACXShowMovie(const char *pszFileName)
 	PROCESS_INFORMATION pi = { 0 };
 	STARTUPINFO si = { 0 };
 	char filename[512];
-	strcat(filename, pszFileName);
+	strcpy(filename, pszFileName);
 	int i;
 
 	std::string command = m_ST.m_szMoviePlayerCommand;
