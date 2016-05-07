@@ -585,11 +585,12 @@ void __cdecl PRACXShowMovie(const char *pszFileName)
 	command += filename;
 
 	// Due to some quantum mechanics bullshit, if I don't write command out to a file, it won't have the right value.
+	// For now, append to a logfile, to help harpalus debug
 	std::ofstream logfile;
-	logfile.open("pracx.tmp");
-	logfile << command;
+	logfile.open("pracx.log", std::ios_base::app);
+	logfile << command << "\r\n";
 	logfile.close();
-	std::remove("pracx.tmp");
+	/* std::remove("pracx.tmp"); */
 
 	m_fPlayingMovie = true;
 
