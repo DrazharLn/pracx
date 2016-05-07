@@ -108,6 +108,20 @@
 #define _cx(a,b) b
 #endif
 
+// PRACX doesn't compile in mingw-g++ yet, because msvc and gcc use
+// semantically different __asm extensions, so don't get too excited about a
+// GNUC ifdef. This is just to get gnu to spit out the fewest errors.
+//
+// Ref on asm difference: http://stackoverflow.com/a/35959859
+// In short: won't fix.
+//
+// Needed for GNUC because gcc suppresses these macro definitions in windows.h
+// (which is kind of sensible, seeing as they override std::max/min if you're
+// using namespace std).
+#ifdef __GNUC__
+#define max(a,b)  (((a) > (b)) ? (a) : (b))
+#define min(a,b)  (((a) < (b)) ? (a) : (b))
+#endif
 
 // Unused?
 #define MAPFLAGS_FLATWORD 1

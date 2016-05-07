@@ -8,13 +8,12 @@
  *
  */
 
+#include "pracxsettings.h"
 #include <SDKDDKVer.h>
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <math.h>
 #include <commctrl.h>
 #include <vector>
-#include "PRACXSettings.h"
 
 using namespace std;
 
@@ -164,8 +163,8 @@ protected:
 	int *m_piValue = NULL;
 	CLabel* m_plblCaption = NULL;
 	CLabel* m_plblValue = NULL;
-	int m_iMin;
-	int m_iMax;
+	long int m_iMin;
+	long int m_iMax;
 
 	void virtual ValToStr(int iValue, char* pszValue){ sprintf(pszValue, "%d", iValue); }
 	void Initialize(char* pszCaption, int iLeft, int iTop, int iWidth, int iHeight, int iMin, int iMax, int iValue, int iValueWidth)

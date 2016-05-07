@@ -1,4 +1,5 @@
 #include <string>
+#include <windows.h>
 
 #define APPVERSION "1.06"
 #define	APPNAME		"PRACX"
@@ -49,6 +50,6 @@ private:
 	const std::string DEFAULT_MOVIE_PLAYER_COMMAND = std::string(".\\movies\\playuv15.exe -software");
 	static int ReadIniInt(char* pszKey, int iDefault = 0, int iMax = 0, int iMin = 0);
 	static void WriteIniInt(char* pszKey, int iValue, int iDefault = 0);
-	static void CSettings::WriteIniString(char* pszKey, std::string value, std::string defaultvalue);
-	static std::string CSettings::ReadIniString(char* pszKey, std::string szDefault);
+	static void WriteIniString(char* pszKey, std::string value, std::string defaultvalue);
+	static std::string ReadIniString(char* pszKey, std::string szDefault);
 };
