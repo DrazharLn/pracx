@@ -1,6 +1,11 @@
 PRACX Change Log
 ================
 
+v1.08 (05/06/2016)
+==================
+* Feature: Can now set MoviePlayerCommand in .ini.
+--DrazharLn
+
 v1.07 (04/21/2016)
 ==================
 * Change: No longer becomes windowed when window loses focus.
