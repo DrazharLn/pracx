@@ -3,6 +3,8 @@
 # banner image
 
 !include "MUI2.nsh"
+!include StrRep.nsh
+!include ReplaceInFile.nsh
 
 !define APP_NAME "PRACX"
 #!define WEB_SITE "http://www.civgaming.net/forums/"
@@ -107,6 +109,11 @@ Section -MainProgram
 
 	IfFileExists "$INSTDIR\game_add.sdb" 0 +2
 		ExecWait 'sdbinst -u "$INSTDIR\game_add.sdb"'
+
+	# Yitzi's Alpha Centauri.Ini disables pracx, but if a user installs this, they probably want it on.
+	IfFileExists "$INSTDIR\Alpha Centauri.Ini" 0 +2
+		!insertmacro _ReplaceInFile "$INSTDIR\Alpha Centauri.Ini" "Disabled=1" "Disabled=<DEFAULT>"
+		!insertmacro _ReplaceInFile "$INSTDIR\Alpha Centauri.Ini" "ScreenWidth=1024" "ScreenWidth=<DEFAULT>"
 
 	# ExecShell open '"$INSTDIR\PRACX Change Log.txt"' SW_SHOWNORMAL
 
