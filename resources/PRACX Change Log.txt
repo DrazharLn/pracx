@@ -1,6 +1,12 @@
 PRACX Change Log
 ================
 
+v1.09 (05/07/2017)
+==================
+* Fix: Video window would lose focus after two minutes
+* Fix: Yitzi's patch 3.5 includes an 'Alpha Centauri.Ini' that sets bad PRACX options. I now look for them at installation time and change them to the defaults. There will be false positives, but it's better than the status quo.
+--Daemonjax and DrazharLn 
+
 v1.08 (05/06/2016)
 ==================
 * Feature: Can now set MoviePlayerCommand in .ini.

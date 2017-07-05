@@ -559,41 +559,44 @@ void RestoreVideoMode(void)
 	ChangeDisplaySettings(NULL, 0);
 }
 
-// Calls an external program to play videos. I think built-in SMAC video playing system is better - it overlays text at the end of the videos and has fewer controls.
-// Unfortunately, calling SMAC's ShowMovie function when PRACX is enabled crashes the game.
+// Calls an external program to play videos, pausing SMAC until that process completes.
+//
+// I think built-in SMAC video playing system is better - it overlays text at
+// the end of the videos and has fewer controls.  Unfortunately, calling SMAC's
+// ShowMovie function when PRACX is enabled crashes the game.
 void __cdecl PRACXShowMovie(const char *pszFileName)
 {
-	PROCESS_INFORMATION pi = { 0 };
-	STARTUPINFO si = { 0 };
-	char filename[512];
-	strcpy(filename, pszFileName);
-	int i;
+	// SMAC sometimes provides a filename with extension, and sometimes does not - normalise.
+	std::string filename(pszFileName);
+	if (filename.length() < 1)
+		// This should never happen, but SMAC is buggy, so let's be defensive.
+		return;
+	else if (filename[filename.length() - 4] != '.')
+		filename += ".wve";
 
+	// Accept an arbitrary commandline from the config file to append the filepath to
+	// and execute.
+	//
+	// This is configurable because playuv15 (the default) isn't very good (and
+	// because it's useful to some people to pass options to playuv15).
+	//
+	// It would be nice to use ffplay or similar, but the videos are encoded with EA's
+	// proprietary TQI codec, and as of July 2017, ffmpeg still doesn't have a good
+	// codec for it - playing with mpv (with or without all the fancy upscaling
+	// algorithms) gives a worse result than playuv15.
 	std::string command = m_ST.m_szMoviePlayerCommand;
-
-	// Would be nice to use ffplay or similar, but the videos are encoded with EA's proprietary TQI codec, and as of April 2016, there's no codec available for ffmpeg.
-	// Could reverse engineer playuv15, or the implementation baked into SMAC, I suppose.
-	i = strlen(filename) - 4;
-
-
-	if (i > -1 && filename[i] != '.')
-		strcat(filename, ".wve");
-
 	command += " .\\movies\\";
 	command += filename;
 
-	// Due to some quantum mechanics bullshit, if I don't write command out to a file, it won't have the right value.
-	std::ofstream logfile;
-	logfile.open("pracx.tmp");
-	logfile << command;
-	logfile.close();
-	std::remove("pracx.tmp");
-
+	// Set this flag so we can react appropriately to some interrupting signals
+	// (currently just toggle windowed mode)
 	m_fPlayingMovie = true;
 
+	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFO si = { 0 };
 	if (CreateProcess(NULL, const_cast<char*>(command.c_str()), NULL, NULL, false, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
 	{
-		WaitForSingleObject(pi.hProcess, 2 * 60 * 1000);
+		WaitForSingleObject(pi.hProcess, INFINITE);
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);
 	}
