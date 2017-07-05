@@ -12,6 +12,7 @@
 !define REG_APP_PATH "Software\Microsoft\DirectPlay\Applications"
 #!define REG_GOG_PATH "Software\GOG.com"
 !define PATCH_FILES_PATH "..\bin"
+!define RESOURCE_FILES_PATH "..\resources"
 
 ######################################################################
 
@@ -95,9 +96,9 @@ Section -MainProgram
 
 	File "${PATCH_FILES_PATH}\prax.dll"
 	File "${PATCH_FILES_PATH}\prac.dll"
-	File "${PATCH_FILES_PATH}\PRACX Change Log.txt"
 	File "${PATCH_FILES_PATH}\pracxpatch.exe"
-	File "${PATCH_FILES_PATH}\Icons.pcx"
+	File "${RESOURCE_FILES_PATH}\PRACX Change Log.txt"
+	File "${RESOURCE_FILES_PATH}\Icons.pcx"
 	
 	ExecWait '"$INSTDIR\pracxpatch.exe"'
 

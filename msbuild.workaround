@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Hack: invoke the VS Developer Command Prompt and feed it the command line we need, followed by a newline and exit.
+
+cmd //K "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" <<<"msbuild $@
+exit"
