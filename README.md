@@ -1,5 +1,7 @@
 # PlotinusRedux's GUI improvements and renderer for SMACX
 
+PRACX was written by PlotinusRedux and is maintained by DrazharLn, both of [alphacentauri2.info](http://alphacentauri2.info) ([forum thread](http://alphacentauri2.info/index.php?topic=14308.0)).
+
 PRACX implements these improvements to the UI:
 
  - Configurable full screen resolution
