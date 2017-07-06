@@ -810,7 +810,7 @@ ULONGLONG GetMSCount(void)
 	return ullRet;
 }
 
-// I think this is buggy and hangs when the pointer is too close to the upper or lower bounds of the map. Bug might be in PRACXCheckScroll, though.
+// TODO: Fix #3: I think this is buggy and hangs when the pointer is too close to the upper or lower bounds of the map. Bug might be in PRACXCheckScroll, though.
 bool DoScroll(double x, double y)
 {
 	bool fScrolled = false;
@@ -1071,6 +1071,7 @@ void __stdcall PRACXCheckScroll(void)
 			ullDeactiveTimer = ullNewTickCount;
 	}
 
+	// TODO: Fix #13: check if mouse has moved since last tick, if it has update MouseOver, else, don't.
 	MouseOver(&p);
 
 	m_fScrolling = false;
@@ -1119,6 +1120,7 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		bool fUp = (iDelta >= 0);
 		iDelta = labs(iDelta);
 
+		// TODO: Fix #5. Check for more dialogue boxes before allowing zooming.
 		if (IsMapShowing() && *m_pAC->piMaxTileX)
 		{
 			int iZoomType = (fUp) ? 515 : 516;
@@ -1142,14 +1144,16 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			return 0;
 		}
 	}
-	// If window has just become inactive
+	// If window has just become inactive (probably alt-tab)...
 	else if (((msg == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE) ||
 		(msg == WM_ACTIVATEAPP && !LOWORD(wParam)))
 		&& !m_fWindowed && !m_fShowingCommDialog)
 	{
+		// TODO: #9, minimize window.
 		/* SetWindowed(true); */
 		iRet = DefWindowProc(hwnd, msg, wParam, lParam);
 	}
+	// Toggle windowed/fullscreen on alt-enter
 	else if ((msg == WM_KEYDOWN && LOWORD(wParam) == VK_RETURN) && GetAsyncKeyState(VK_MENU) < 0)
 	{
 		SetWindowed(!m_fWindowed);
@@ -1183,10 +1187,12 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		SetWindowPlacement(hwnd, &wp);
 		SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOMOVE | SWP_FRAMECHANGED);
 	}
+	// If the window is not fullscreen, and the user presses the maximize button, set fullscreen.
 	else if (msg == WM_SYSCOMMAND && m_fWindowed && (wParam & 0xFFF0) == SC_MAXIMIZE)
 	{
 		SetWindowed(false);
 	}
+	// If we get sent the close signal (close button, alt+f4), simulate pressing escape.
 	else if (msg == WM_SYSCOMMAND)
 	{
 		if ((wParam & 0xFFF0) == SC_CLOSE)
@@ -1203,6 +1209,7 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		InvalidateRect(hwnd, NULL, false);
 		iRet = DefWindowProc(hwnd, msg, wParam, lParam);
 	}
+	// What does this do?
 	else if (msg >= WM_MOUSEFIRST && msg <= WM_MOUSELAST)
 	{
 		POINT p;
@@ -1254,22 +1261,28 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		else 
 			iRet = m_pAC->pfncWinProc(hwnd, msg, wParam, lParam);
 	}
+	// alt-r: cycle resource viewing mode.
 	else if (msg == WM_CHAR && wParam == 'r' && GetAsyncKeyState(VK_MENU) < 0)
 	{
 		SetResourceMode(m_iResourceMode + 1);
 		iRet = 0;
 	}
+	// alt-t: cycle terrain viewing mode.
 	else if (msg == WM_CHAR && wParam == 't' && GetAsyncKeyState(VK_MENU) < 0)
 	{
 		SetTerrainMode(m_iTerrainMode + 1);
 		iRet = 0;
 	}
+	// alt-p: open on-screen PRACX menu.
 	else if (msg == WM_CHAR && wParam == 'p' && GetAsyncKeyState(VK_MENU) < 0)
 	{
 		m_ST.Show(*m_pAC->phInstance, hwnd);
 	}
+	// Catch escape if the PRACX menu is open and close the menu (if PRACX
+	// isn't open, escape event will fall through to somewhere else.
 	else if (msg == WM_KEYDOWN && LOWORD(wParam) == VK_ESCAPE && m_ST.IsShowing())
 		m_ST.Close();
+	// Else send event to SMAC.
 	else
 		iRet = m_pAC->pfncWinProc(hwnd, msg, wParam, lParam);
 
@@ -1313,6 +1326,7 @@ ATOM WINAPI PRACXRegisterClassA(WNDCLASS* pstWndClass)
 }
 
 // Intercept BitBlt calls so we can scale them if we're windowed.
+// TODO: Fix #7: Is this where scaling code would go? Probably.
 BOOL WINAPI PRACXWindowBitBlt(
 	_In_  HDC hdcDest,
 	_In_  int nXDest,
@@ -1465,8 +1479,10 @@ void ZoomInit(void)
 	}
 }
 
+// Overrides SMAC's ZoomKeyPress stuff. Calls PRACX's zoom code.
 void __stdcall PRACXZoomKeyPress(CMain* This, int iZoomType)
 {
+	// Don't know in what case CMain wouldn't be set...
 	if (This)
 	{
 		ZoomInit();
@@ -1484,6 +1500,7 @@ void __stdcall PRACXZoomKeyPress(CMain* This, int iZoomType)
 			}
 		}
 
+		// Don't know where these magic numbers (515-520) come from.
 		switch (iZoomType)
 		{
 		case 515:
@@ -1936,6 +1953,7 @@ int __stdcall PRACXDrawResource(CMain* pMain, int iTileX, int iTileY, int iLeft,
 	return *m_pAC->piZoomNum;
 }
 
+// Insert a call to PRACXDrawResource
 _declspec(naked) void PRACXDrawResource_Thunk(void)
 {
 #define DR_iLeft		dword ptr [ebp+28h]
@@ -1972,6 +1990,9 @@ _declspec(naked) void PRACXDrawResource_Thunk(void)
 	}
 }
 
+// Load up some member variables for use in PRACXDrawTileDraw. Don't know why
+// this approach was taken here rather than making a function call in ASM as
+// elsewhere.
 __declspec(naked) void PRACXDrawTile_Thunk(void)
 {
 #define DTT_iTileX	dword ptr [ebp+20h]
@@ -1994,6 +2015,8 @@ __declspec(naked) void PRACXDrawTile_Thunk(void)
 
 // Draw terrain overlay
 // Replace the tile background with an appropriate sprite if terrainmode in 1..4
+//
+// Looks like it probably overrides a similar SMAC call.
 int __stdcall PRACXDrawTileDraw(CImage *This, CCanvas *poCanvasDest, int x, int y, int a5, int a6, int a7)
 {
 	CTile* pTile = &(*m_pAC->paTiles)[m_iDrawTileY * *m_pAC->piTilesPerRow + m_iDrawTileX / 2];
