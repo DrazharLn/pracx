@@ -434,6 +434,7 @@ BOOL(WINAPI *pfncGetSaveFileName)(LPOPENFILENAME lpofn) = NULL;
 CSettings m_ST;
 
 bool m_fWindowed = false;
+bool m_Minimised = false;
 RECT m_rWindowedRect;
 RECT m_rPaintSaved = { 0 };
 
@@ -723,6 +724,29 @@ void SetWindowed(bool fValue)
 		}
 	}
 }
+
+// Minimise/restore SMAC if it's not in the desired state already
+void SetMinimised(bool minimise)
+{
+
+	// Previously this also refused to minimise if a movie was playing.
+	if (m_Minimised != minimise && *m_pAC->phWnd)
+	{
+		log(minimise);
+		m_Minimised = minimise;
+		if (minimise)
+		{
+			RestoreVideoMode();
+			ShowWindow(*m_pAC->phWnd, SW_MINIMIZE);
+		}
+		else
+		{
+			ShowWindow(*m_pAC->phWnd, SW_RESTORE);
+			SetVideoMode();
+		}
+	}
+}
+
 
 // Unused?
 BOOL WINAPI PRACXShowWindow(
@@ -1105,6 +1129,8 @@ __declspec(naked) void PRACXCheckScroll_Thunk(void)
 }
 
 // React to events from window manager (Mouse, Keyboard, WM stuff).
+//
+// TODO: Is this broken because it doesn't callnexthook?
 LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static int iDeltaAccum = 0;
@@ -1160,13 +1186,14 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			return 0;
 		}
 	}
-	// If window has just become inactive (probably alt-tab)...
-	else if (((msg == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE) ||
-		(msg == WM_ACTIVATEAPP && !LOWORD(wParam)))
-		&& !m_fWindowed && !m_fShowingCommDialog)
+	// If window has just become inactive e.g. ALT+TAB
+	else if (msg == WM_ACTIVATEAPP && !m_fWindowed && !m_fShowingCommDialog)
 	{
-		// TODO: #9, minimize window.
-		SetWindowed(true);
+		// wParam is 0 if the window has become inactive.
+		if (!LOWORD(wParam))
+			SetMinimised(true);
+		else 
+			SetMinimised(false);
 		iRet = DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 	// Toggle windowed/fullscreen on alt-enter
