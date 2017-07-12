@@ -106,6 +106,20 @@
 #define _cx(a,b) b
 #endif
 
+// Logs
+//
+// https://stackoverflow.com/questions/1644868/c-define-macro-for-debug-printing#1644898
+		/* fprintf(logfile, "%s:%d:%s(): " fmt, __FILE__, \ */
+		/* 		__LINE__, __func__, __VA_ARGS__);\ */
+#define DEBUG 1
+#define log(msg) \
+	do { if (DEBUG) {\
+		std::ofstream logfile;\
+		logfile.open("pracx.log", std::ios::app);\
+		logfile << GetTickCount() << ":pracx.cpp" << ":" << __LINE__ << ":" << __func__ << "\t" << msg << std::endl;\
+		logfile.close();\
+	} } while (0)
+
 // PRACX doesn't compile in mingw-g++ yet, because msvc and gcc use
 // semantically different __asm extensions, so don't get too excited about a
 // GNUC ifdef. This is just to get gnu to spit out the fewest errors.
@@ -566,6 +580,8 @@ void RestoreVideoMode(void)
 // ShowMovie function when PRACX is enabled crashes the game.
 void __cdecl PRACXShowMovie(const char *pszFileName)
 {
+	log(pszFileName);
+
 	// SMAC sometimes provides a filename with extension, and sometimes does not - normalise.
 	std::string filename(pszFileName);
 	if (filename.length() < 1)
@@ -628,6 +644,8 @@ HWND WINAPI PRACXCreateWindowEx(
 	dwExStyle = 0;
 	dwStyle |= WS_CLIPCHILDREN;
 
+	log("w: " << nWidth << "\th: " << nHeight << "\tx: " << x << "\ty: " << y);
+
 	return pfncCreateWindowEx(
 		dwExStyle,
 		lpClassName,
@@ -672,6 +690,7 @@ SHORT WINAPI PRACXGetAsyncKeyState(
 	_In_  int vKey
 	)
 {
+	log(vKey);
 	SHORT sRet = 0;
 
 	sRet = pfncGetAsyncKeyState(vKey);
@@ -686,6 +705,7 @@ void SetWindowed(bool fValue)
 
 	if (m_fWindowed != fValue && *m_pAC->phWnd && !m_fPlayingMovie)
 	{
+		log(fValue);
 		m_fWindowed = fValue;
 
 		if (m_fWindowed)
@@ -731,6 +751,7 @@ BOOL WINAPI PRACXShowWindow(
 // Unused override.
 int __stdcall PRACXWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
+	log(hInstance << "\t" << hPrevInstance << "\t" << lpCmdLine << "\t" << nShowCmd);
 	return m_pAC->pfncWinMain(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 }
 
@@ -751,6 +772,8 @@ int WINAPI PRACXGetSystemMetrics(int nIndex)
 		iResult = pfncGetSystemMetrics(nIndex);
 		break;
 	}
+
+	log(nIndex << "\t" << iResult);
 
 	return iResult;
 }
@@ -1102,6 +1125,7 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 	if (msg == WM_MOVIEOVER)
 	{
+		log("WM_MOVIEOVER");
 		m_fPlayingMovie = false;
 
 		if (!m_fWindowed)
@@ -1117,6 +1141,7 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	}
 	else if (msg == WM_MOUSEWHEEL &&  fHasFocus)
 	{
+		log("WM_MOUSEWHEEL");
 		int iDelta = GET_WHEEL_DELTA_WPARAM(wParam) + iDeltaAccum;
 		iDeltaAccum = iDelta % WHEEL_DELTA;
 		iDelta /= WHEEL_DELTA;
@@ -1179,6 +1204,7 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	// Why run this code here rather than in SetWindowed? I dunno.
 	else if (msg == WM_USER + 3)
 	{
+		log("WM_USER+3");
 		WINDOWPLACEMENT wp;
 
 		memset(&wp, 0, sizeof(wp));
@@ -1193,11 +1219,13 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	// If the window is not fullscreen, and the user presses the maximize button, set fullscreen.
 	else if (msg == WM_SYSCOMMAND && m_fWindowed && (wParam & 0xFFF0) == SC_MAXIMIZE)
 	{
+		log("WM_SYSCOMMAND\tMAXIMIZE");
 		SetWindowed(false);
 	}
 	// If we get sent the close signal (close button, alt+f4), simulate pressing escape.
 	else if (msg == WM_SYSCOMMAND)
 	{
+		log("WM_SYSCOMMAND\t"<<wParam);
 		if ((wParam & 0xFFF0) == SC_CLOSE)
 		{
 			PostMessage(hwnd, WM_KEYDOWN, VK_ESCAPE, 0);
@@ -1209,6 +1237,7 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	}
 	else if (msg == WM_SIZING || msg == WM_MOVING)
 	{
+		log("WM_SIZING or MOVING");
 		InvalidateRect(hwnd, NULL, false);
 		iRet = DefWindowProc(hwnd, msg, wParam, lParam);
 	}
@@ -1221,6 +1250,8 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		pps = (POINTS*)&lParam;
 		p.x = pps->x;
 		p.y = pps->y;
+
+		/* log("WM_MOUSEsomething\t" << p.x << "\t" << p.y); */
 
 		ClientToBackbuffer(&p);
 
@@ -1267,24 +1298,30 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	// alt-r: cycle resource viewing mode.
 	else if (msg == WM_CHAR && wParam == 'r' && GetAsyncKeyState(VK_MENU) < 0)
 	{
+		log("WM_CHAR alt+r");
 		SetResourceMode(m_iResourceMode + 1);
 		iRet = 0;
 	}
 	// alt-t: cycle terrain viewing mode.
 	else if (msg == WM_CHAR && wParam == 't' && GetAsyncKeyState(VK_MENU) < 0)
 	{
+		log("WM_CHAR alt+t");
 		SetTerrainMode(m_iTerrainMode + 1);
 		iRet = 0;
 	}
 	// alt-p: open on-screen PRACX menu.
 	else if (msg == WM_CHAR && wParam == 'p' && GetAsyncKeyState(VK_MENU) < 0)
 	{
+		log("WM_CHAR alt+p");
 		m_ST.Show(*m_pAC->phInstance, hwnd);
 	}
 	// Catch escape if the PRACX menu is open and close the menu (if PRACX
 	// isn't open, escape event will fall through to somewhere else.
 	else if (msg == WM_KEYDOWN && LOWORD(wParam) == VK_ESCAPE && m_ST.IsShowing())
+	{
+		log("WM_KEYDOWN ESC");
 		m_ST.Close();
+	}
 	// Else send event to SMAC.
 	else
 		iRet = m_pAC->pfncWinProc(hwnd, msg, wParam, lParam);
@@ -1305,6 +1342,8 @@ BOOL WINAPI PRACXGetOpenFileName(LPOPENFILENAME lpofn)
 	fRet = pfncGetOpenFileName(lpofn);
 	PostMessage(*m_pAC->phWnd, WM_COMMON_DIALOG_DONE, 0, 0);
 
+	log(fRet);
+
 	return fRet;
 }
 
@@ -1317,6 +1356,8 @@ BOOL  WINAPI PRACXGetSaveFileName(LPOPENFILENAME lpofn)
 	fRet = pfncGetSaveFileName(lpofn);
 	PostMessage(*m_pAC->phWnd, WM_COMMON_DIALOG_DONE, 0, 0);
 
+	log(fRet);
+
 	return fRet;
 }
 
@@ -1324,6 +1365,7 @@ BOOL  WINAPI PRACXGetSaveFileName(LPOPENFILENAME lpofn)
 ATOM WINAPI PRACXRegisterClassA(WNDCLASS* pstWndClass)
 {
 	pstWndClass->lpfnWndProc = PRACXWinProc;
+	log(pstWndClass);
 
 	return pfncRegisterClassA(pstWndClass);
 }
@@ -1418,6 +1460,7 @@ void ZoomInit(void)
 	static int s_iLastZoomInc = -1;
 	static int s_iLastWidth = -1;
 
+	log(s_iLastZoomInc << "\t" << m_ST.m_iZoomLevels << "\t" << s_iLastWidth << "\t" << *m_pAC->piMaxTileX);
 
 	if (s_iLastZoomInc != m_ST.m_iZoomLevels || s_iLastWidth != *m_pAC->piMaxTileX)
 	{
@@ -1488,6 +1531,7 @@ void __stdcall PRACXZoomKeyPress(CMain* This, int iZoomType)
 	// Don't know in what case CMain wouldn't be set...
 	if (This)
 	{
+		log(iZoomType);
 		ZoomInit();
 
 		int iCurrent = 0;
@@ -1565,6 +1609,8 @@ int __stdcall PRACXZoomProcessing(CMain* This)
 		m_pAC->pfncTileToPoint(This, ptNewTile.x, ptNewTile.y, &ptOldCenter.x, &ptOldCenter.y);
 
 		iRet = m_pAC->pfncZoomProcessing(This);
+
+		log(iRet);
 
 		if (m_fScrolling)
 		{
@@ -1699,6 +1745,7 @@ BOOL WINAPI PRACXInvalidateRect(
 // Load sprites from Icons.pcx and store them in memory.
 int __stdcall PRACXLoadIcons(void)
 {
+	log("");
 	CSprite* pSprite = m_astGrayResourceSprites;
 
 	for (int y = 0; y < 3; y++)
@@ -1746,6 +1793,8 @@ int __stdcall PRACXDrawCityRes(CCity* pCity, int iTile)
 		m_fGrayResources = true;
 		iRet = 1;
 	}
+
+	log(pCity << "\t" << iTile << "\t" << iRet << "\t" << m_fGrayResources);
 
 	return iRet;
 }
@@ -2092,6 +2141,7 @@ THISCALL_THUNK(PRACXDrawTileDraw, PRACXDrawTileDraw_Thunk)
 // Helper for setting menu values properly.
 char* GetMenuCaption(int iMenuID)
 {
+	log(iMenuID);
 	static const char* MENU_CAPTIONS[] = {
 		"PRACX Preferences|Alt+P",
 		"Terrain Color Modes|Alt+T",
@@ -2123,6 +2173,8 @@ void SetTerrainMode(int iMode)
 {
 	iMode = iMode % 5;
 
+	log(iMode);
+
 	if (iMode != m_iTerrainMode)
 	{
 		int i = m_iTerrainMode;
@@ -2148,6 +2200,8 @@ void SetResourceMode(int iMode)
 {
 	iMode = iMode % 3;
 
+	log(iMode);
+
 	if (iMode != m_iResourceMode)
 	{
 		int i = m_iResourceMode;
@@ -2169,6 +2223,7 @@ void SetResourceMode(int iMode)
 
 void __cdecl PRACXMainMenuHandler(int iMenuItemId)
 {
+	log(iMenuItemId);
 	if (iMenuItemId == MENUID_SETTINGS)
 		m_ST.Show(*m_pAC->phInstance, *m_pAC->phWnd);
 	else if (iMenuItemId == MENUID_TERRAIN)
@@ -2187,6 +2242,7 @@ void __cdecl PRACXMainMenuHandler(int iMenuItemId)
 
 int __stdcall PRACXMainMenuUpdateVisible(CMainMenu *This, int a2)
 {
+	log(a2);
 	char sz[255];
 
 	m_pAC->pfncMainMenuAddBaseMenu(This, BMENUID_PRACX, strcpy(sz, "PRACX"), 1);
@@ -2233,6 +2289,7 @@ _declspec(naked) void PRACXFreeLib(void)
 // Overwrite bits of SMAC's running machine code to make it call out to this library, and some other miscellaneous problems.
 __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 {
+	log("");
 	// If we can't load the settings from Alpha Centauri.ini, don't load this library.
 	if (!m_ST.Load())
 	{
@@ -2438,14 +2495,19 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        LPVOID lpReserved
 					 )
 {
+	log(hModule << "\t" << ul_reason_for_call << "\t" << lpReserved);
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
 		if (!CSettings::IsEnabled())
 			return false;
+		log("Loaded");
+		break;
+	case DLL_PROCESS_DETACH:
+		log("Unloaded");
+		break;
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
 		break;
 	}
 	return TRUE;
