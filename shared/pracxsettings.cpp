@@ -2,7 +2,7 @@
  * pracxsettings.cpp
  *
  * Three things in one:
- * 	A container for pracx's settings
+ * 	A namespace for pracx's settings variables
  * 	Definition of the in-game UI overlay that controls these settings
  * 	Functions to read and write these settings from and to Alpha Centauri.ini.
  *
@@ -15,9 +15,12 @@
 #include <commctrl.h>
 #include <vector>
 
+// TODO: PR's usage of std:: is inconsistant. Sometimes it's used when it's not needed in this file.
 using namespace std;
 
-typedef enum SETTING_CONTROLS_E {
+// {{{ In-game options screen
+
+enum SETTING_CONTROLS_E {
 	CB_RESOLUTION = 101,
 	TRK_ZOOMLEVELS,
 	TRK_SCROLLMIN,
@@ -111,6 +114,7 @@ public:
 	void SetText(char* pszText){ SetWindowText(m_hwnd, pszText); }
 };
 
+// A horizontal scroll bar to select values.
 class CTrackbar : public CControl {
 public:
 	CTrackbar(HWND hwndParent, int iID, char* pszToolTip) : CControl(hwndParent, iID, pszToolTip){};
@@ -226,11 +230,16 @@ protected:
 	HWND m_hwndValue;
 };
 
+// Horizontal scroll bar to select resolutions.
+//
+// Uses EnumDisplaySettings to get options.
 class CTrackResolution : public CTrackbar {
 public:
 	CTrackResolution(HWND hwndParent, int iID, char* pszCaption, int iLeft, int iTop, int iWidth, int iHeight, POINT* pptValue, char* pszToolTip = NULL)
 		: CTrackbar(hwndParent, iID, pszToolTip)
 	{
+		log(hwndParent << "\t" << iID << "\t" << pszCaption << "\t" << iLeft << "\t" << iTop << "\t" << iWidth << "\t" << iHeight << "\t" << pptValue << "\t" << pszToolTip);
+
 		int iValue;
 		DEVMODE dm = { 0 };
 		POINT p = { 0 };
@@ -519,10 +528,44 @@ private:
 		
 	}
 };
+
 HBRUSH CSettingsWnd::m_hBrush = NULL;
 bool CSettingsWnd::m_fRegistered = false;
 char* CSettingsWnd::m_pszClassName = "PRACXSettingsWnd";
 HINSTANCE CSettingsWnd::m_hInstance = NULL;
+
+void CSettings::Show(HINSTANCE hInstance, HWND hwndParent)
+{
+	if (!IsShowing())
+		new CSettingsWnd(hInstance, hwndParent, this);
+}
+
+bool CSettings::IsShowing()
+{
+	return !!m_pWin;
+}
+
+bool CSettings::IsMyWindow(HWND hwnd)
+{
+	return (m_pWin && ((CSettingsWnd*)m_pWin)->m_hwnd == hwnd);
+}
+
+void CSettings::Close()
+{
+	if (m_pWin)
+		DestroyWindow(((CSettingsWnd*)m_pWin)->m_hwnd);
+}
+
+CSettings::~CSettings()
+{
+	if (m_pWin)
+		((CSettingsWnd*)m_pWin)->m_pSettings = NULL;
+}
+
+// }}}
+
+// {{{ Manage ini file.
+
 
 bool CSettings::IsEnabled()
 {
@@ -546,6 +589,8 @@ bool CSettings::Load()
 
 	m_ptScreenSize.x = ReadIniInt("ScreenWidth", m_ptDefaultScreenSize.x, m_ptDefaultScreenSize.x, 1024);
 	m_ptScreenSize.y = ReadIniInt("ScreenHeight", m_ptDefaultScreenSize.y, m_ptDefaultScreenSize.y, 768);
+
+	log(dm.dmPelsWidth << "\t" << dm.dmPelsHeight << "\t" << m_ptDefaultScreenSize.x << "\t" << m_ptDefaultScreenSize.y << "\t" << m_ptScreenSize.x << "\t" << m_ptScreenSize.y);
 
 	m_ptNewScreenSize = m_ptScreenSize;
 
@@ -576,6 +621,7 @@ bool CSettings::Load()
 
 void CSettings::Save()
 {
+	log("");
 	WriteIniInt("ScreenWidth", m_ptNewScreenSize.x, m_ptDefaultScreenSize.x);
 	WriteIniInt("ScreenHeight", m_ptNewScreenSize.y, m_ptDefaultScreenSize.y);
 
@@ -597,22 +643,9 @@ void CSettings::Save()
 
 }
 
-void CSettings::Show(HINSTANCE hInstance, HWND hwndParent)
-{
-	if (!IsShowing())
-		new CSettingsWnd(hInstance, hwndParent, this);
-}
-
-bool CSettings::IsShowing()
-{
-	return !!m_pWin;
-}
-
-bool CSettings::IsMyWindow(HWND hwnd)
-{
-	return (m_pWin && ((CSettingsWnd*)m_pWin)->m_hwnd == hwnd);
-}
-
+// Read an int from AC.ini, if the key doesn't exist, write it as "<DEFAULT>" so user knows they can change it.
+//
+// We write "<DEFAULT>" rather than the real value so we don't bake old defaults into Ini files.
 int CSettings::ReadIniInt(char* pszKey, int iDefault, int iMax, int iMin)
 {
 	char szValue[255] = { 0 };
@@ -660,6 +693,7 @@ void CSettings::WriteIniInt(char* pszKey, int iValue, int iDefault)
 	else
 		sprintf(szValue, "%d", iValue);
 
+	log(pszKey << "\t" << iValue << "\t" << iDefault);
 	WritePrivateProfileString("PRACX", pszKey, szValue, ".\\Alpha Centauri.ini");
 }
 
@@ -668,17 +702,6 @@ void CSettings::WriteIniString(char* pszKey, std::string value, std::string defa
 	if (value == defaultvalue)
 		value = "<DEFAULT>";
 
+	log(pszKey << "\t" << value << "\t" << defaultvalue);
 	WritePrivateProfileString("PRACX", pszKey, const_cast<char*>(value.c_str()), ".\\Alpha Centauri.ini");
-}
-
-void CSettings::Close()
-{
-	if (m_pWin)
-		DestroyWindow(((CSettingsWnd*)m_pWin)->m_hwnd);
-}
-
-CSettings::~CSettings()
-{
-	if (m_pWin)
-		((CSettingsWnd*)m_pWin)->m_pSettings = NULL;
 }

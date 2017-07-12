@@ -91,9 +91,6 @@
 #include <process.h>
 #include <commdlg.h>
 #include <string>
-#include <iostream>
-#include <fstream>
-#include <stdio.h>
 #include "terran.h"
 #include "PRACXSettings.h"
 
@@ -105,20 +102,6 @@
 #else
 #define _cx(a,b) b
 #endif
-
-// Logs
-//
-// https://stackoverflow.com/questions/1644868/c-define-macro-for-debug-printing#1644898
-		/* fprintf(logfile, "%s:%d:%s(): " fmt, __FILE__, \ */
-		/* 		__LINE__, __func__, __VA_ARGS__);\ */
-#define DEBUG 1
-#define log(msg) \
-	do { if (DEBUG) {\
-		std::ofstream logfile;\
-		logfile.open("pracx.log", std::ios::app);\
-		logfile << GetTickCount() << ":pracx.cpp" << ":" << __LINE__ << ":" << __func__ << "\t" << msg << std::endl;\
-		logfile.close();\
-	} } while (0)
 
 // PRACX doesn't compile in mingw-g++ yet, because msvc and gcc use
 // semantically different __asm extensions, so don't get too excited about a
@@ -773,7 +756,7 @@ int WINAPI PRACXGetSystemMetrics(int nIndex)
 		break;
 	}
 
-	log(nIndex << "\t" << iResult);
+	log(nIndex << "\t" << iResult << "\t" << pfncGetSystemMetrics(nIndex));
 
 	return iResult;
 }

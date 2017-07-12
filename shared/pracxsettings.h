@@ -1,5 +1,8 @@
 #include <string>
 #include <windows.h>
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
 
 #define APPVERSION "1.06"
 #define	APPNAME		"PRACX"
@@ -12,6 +15,20 @@
 #define DEFAULT_ZOOMED_DETAILS			1
 #define DEFAULT_MOUSE_OVER_TILE_INFO	1
 #define DEFAULT_SHOW_UNWORKED			1
+
+// Logs
+//
+// https://stackoverflow.com/questions/1644868/c-define-macro-for-debug-printing#1644898
+		/* fprintf(logfile, "%s:%d:%s(): " fmt, __FILE__, \ */
+		/* 		__LINE__, __func__, __VA_ARGS__);\ */
+#define DEBUG 1
+#define log(msg) \
+	do { if (DEBUG) {\
+		std::ofstream logfile;\
+		logfile.open("pracx.log", std::ios::app);\
+		logfile << GetTickCount() << ":" << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\t" << msg << std::endl;\
+		logfile.close();\
+	} } while (0)
 
 class CSettings {
 public:
