@@ -582,7 +582,7 @@ bool CSettings::Load()
 	DEVMODE dm = { 0 };
 	dm.dmSize = sizeof(dm);
 
-	EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &dm);
+	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
 
 	m_ptDefaultScreenSize.x = dm.dmPelsWidth;
 	m_ptDefaultScreenSize.y = dm.dmPelsHeight;
@@ -673,14 +673,30 @@ int CSettings::ReadIniInt(char* pszKey, int iDefault, int iMax, int iMin)
 	return iRet;
 }
 
-std::string CSettings::ReadIniString(char* pszKey, std::string szDefault)
+// Read string from AC.ini, if the key doesn't exist, write it as "<DEFAULT>" so user knows they can change it.
+//
+// We write "<DEFAULT>" rather than the real value so we don't bake old defaults into Ini files.
+std::string CSettings::ReadIniString(char* pszKey, std::string defaultString)
 {
 	char szValue[1024] = { 0 };
 	
-	GetPrivateProfileString("PRACX", pszKey, szDefault.c_str(), szValue, sizeof(szValue) - 1, ".\\Alpha Centauri.ini");
+	GetPrivateProfileString("PRACX", pszKey, "", szValue, sizeof(szValue) - 1, ".\\Alpha Centauri.ini");
 	szValue[sizeof(szValue)-1] = 0;
 
-	return std::string(szValue);
+	std::string sRet(szValue);
+
+	if (sRet == "") 
+	{
+		sRet = defaultString;
+		WriteIniString(pszKey, sRet, sRet);
+	}
+	else if (sRet == "<DEFAULT>")
+	{
+		sRet = defaultString;
+	}
+
+	log(pszKey << "\t" << defaultString << "\t" << sRet);
+	return sRet;
 }
 
 	
