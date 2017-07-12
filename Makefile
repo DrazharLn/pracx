@@ -18,7 +18,7 @@ installer:
 	$(NSIS) //V1 InstallScript/PRACX.nsi
 
 deploy:
-	cp bin/prax.dll bin/prac.dll $(DEPLOYPATH)
+	cp bin/prax.dll bin/prac.dll resources/Icons.pcx $(DEPLOYPATH)
 
 test:
 	bash -c 'cd $(DEPLOYPATH); ./terranx'
