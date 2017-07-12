@@ -559,8 +559,13 @@ void RestoreVideoMode(void)
 // Calls an external program to play videos, pausing SMAC until that process completes.
 //
 // I think built-in SMAC video playing system is better - it overlays text at
-// the end of the videos and has fewer controls.  Unfortunately, calling SMAC's
-// ShowMovie function when PRACX is enabled crashes the game.
+// the end of the videos and has fewer controls.
+//
+// Plotinus intercepts the movie playing system because one of the destructors
+// of that system re-initialises DirectX, or maybe just SMAC internals, and
+// that means SMAC gets rendered at a low resolution and the menus go weird.
+// TODO: investigate this more, maybe I can make a smaller change to the
+// destructor or just decompile SMAC's video renderer.
 void __cdecl PRACXShowMovie(const char *pszFileName)
 {
 	log(pszFileName);
