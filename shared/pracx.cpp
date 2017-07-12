@@ -601,6 +601,9 @@ void __cdecl PRACXShowMovie(const char *pszFileName)
 		CloseHandle(pi.hThread);
 	}
 
+	// Reset display mode after movie.
+	// Maybe Plotinus did it this way because SMAC waits on this signal for some reason?
+	// TODO: test that hyp.
 	PostMessage(*m_pAC->phWnd, WM_MOVIEOVER, 0, 0);
 }
 
@@ -2384,6 +2387,7 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 		// Override API calls (absolute jumps) in SMAC by replacing the absolute address with the address of our functions.
 		for (int i = 0; i < sizeof(m_astApi) / sizeof(m_astApi[0]); i++)
 		{
+			// TODO: fix this comment.
 			// Point our local definitions of the SMAC API calls
 			// (which currently just == NULL), to the real
 			// addresses of the API calls (in the Windows API,
@@ -2415,12 +2419,9 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 		{
 			for (int i = 0; i < sizeof(m_aiZoomDetailChanges) / sizeof(m_aiZoomDetailChanges[0]); i++)
 			{
-				// Looks like it just evaluates to *c = 0xF2? Why the condition?
 				UCHAR* c = (UCHAR*)m_aiZoomDetailChanges[i];
-
 				if (*c < 0xF2)
 					*c = 1;
-
 				*c = 0xF2;
 			}
 		}
