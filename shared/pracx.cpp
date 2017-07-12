@@ -1153,7 +1153,7 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		&& !m_fWindowed && !m_fShowingCommDialog)
 	{
 		// TODO: #9, minimize window.
-		/* SetWindowed(true); */
+		SetWindowed(true);
 		iRet = DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 	// Toggle windowed/fullscreen on alt-enter
