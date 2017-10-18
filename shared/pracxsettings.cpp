@@ -587,6 +587,13 @@ bool CSettings::Load()
 	m_ptDefaultScreenSize.x = dm.dmPelsWidth;
 	m_ptDefaultScreenSize.y = dm.dmPelsHeight;
 
+	if (m_ptDefaultScreenSize.y > m_ptDefaultScreenSize.x)
+	{
+		log("Portrait resolution detected: assuming landscape");
+		m_ptDefaultScreenSize.y = dm.dmPelsHeight;
+		m_ptDefaultScreenSize.x = dm.dmPelsWidth;
+	}
+
 	m_ptScreenSize.x = ReadIniInt("ScreenWidth", m_ptDefaultScreenSize.x, m_ptDefaultScreenSize.x, 1024);
 	m_ptScreenSize.y = ReadIniInt("ScreenHeight", m_ptDefaultScreenSize.y, m_ptDefaultScreenSize.y, 768);
 
