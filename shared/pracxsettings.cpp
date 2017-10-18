@@ -590,7 +590,7 @@ bool CSettings::Load()
 	m_ptScreenSize.x = ReadIniInt("ScreenWidth", m_ptDefaultScreenSize.x, m_ptDefaultScreenSize.x, 1024);
 	m_ptScreenSize.y = ReadIniInt("ScreenHeight", m_ptDefaultScreenSize.y, m_ptDefaultScreenSize.y, 768);
 
-	log(dm.dmPelsWidth << "\t" << dm.dmPelsHeight << "\t" << m_ptDefaultScreenSize.x << "\t" << m_ptDefaultScreenSize.y << "\t" << m_ptScreenSize.x << "\t" << m_ptScreenSize.y);
+	log("Display Settings\t" << dm.dmPelsWidth << "\t" << dm.dmPelsHeight << "\t" << m_ptDefaultScreenSize.x << "\t" << m_ptDefaultScreenSize.y << "\t" << m_ptScreenSize.x << "\t" << m_ptScreenSize.y);
 
 	m_ptNewScreenSize = m_ptScreenSize;
 

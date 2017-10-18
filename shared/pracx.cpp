@@ -93,6 +93,7 @@
 #include <string>
 #include "terran.h"
 #include "PRACXSettings.h"
+#include "wm2str.cpp"
 
 // _cx macro used to express information particular to smaC or smaX. If _SMAC
 // is defined, the tuple evaluated to the first argument, if _SMAC is not
@@ -1136,6 +1137,11 @@ LRESULT __stdcall PRACXWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	static int iDeltaAccum = 0;
 	int iRet = 0;
 	bool fHasFocus = (GetFocus() == *m_pAC->phWnd);
+
+	const std::string msgName = wm2str(msg, false);
+	if (!msgName.empty()) {
+		log(msgName);
+	}
 
 	if (msg == WM_MOVIEOVER)
 	{
@@ -2383,7 +2389,7 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 	
 	// Direct memory overwrites, string or int 
 	PRACXCHANGE_T m_astChanges[] = {
-		{ _cx(0x005EEA90, 0x005D5C70), NULL, (int)PRACXWinProc, 4 }, // Redirect WinProc
+		{ _cx(0x005EEA90, 0x005D5C70), NULL, (UINT)PRACXWinProc, 4 }, // Redirect WinProc
 		{ _cx(0x0060900B, 0x005F018B), NULL, 0xE8, 1 }, // Redirect BitBlt for Window
 		{ _cx(0x00609010, 0x005F0190), NULL, 0x90, 1 }, // NOP for BitBlt for Window
 		{ _cx(0x005291B8, 0x00515347), _cx("\x55\x50\xE8", "\x53\x50\xE8"), 0, 3 }, //push ebp/ebx, push eax, call short ...

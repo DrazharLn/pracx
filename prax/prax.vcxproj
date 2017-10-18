@@ -86,13 +86,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\shared\pracx.cpp" />
-    <ClCompile Include="..\shared\pracxsettings.cpp" />
+    <ClCompile Include="..\shared\*.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\shared\pracxsettings.h" />
-    <ClInclude Include="..\shared\resource.h" />
-    <ClInclude Include="..\shared\terran.h" />
+    <ClInclude Include="..\shared\*.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\shared\version.rc" />
