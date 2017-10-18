@@ -1,6 +1,14 @@
 PRACX Change Log
 ================
 
+v1.10 (10/18/2017)
+==================
+* Fix: use current rather than registry display settings
+* Fix: alt-tab works better
+* Feature: package BUncle's Icons.pcx
+* Feature: optional logging
+--DrazharLn
+
 v1.09 (05/07/2017)
 ==================
 * Fix: Video window would lose focus after two minutes
