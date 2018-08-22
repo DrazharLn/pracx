@@ -1,0 +1,1 @@
+Everyone is free to use, distribute, and modify this patch with no limitations, including bundling it in other patches and modifying the source code.
