@@ -520,7 +520,7 @@ void ClientToBackbuffer(POINT* pPt)
 	}
 }
 
-// Maps points from Backbugger to client coordinate systems
+// Maps points from Backbuffer to client coordinate systems
 void BackbufferToClient(POINT* pPt)
 {
 	RECT r;
@@ -1671,7 +1671,14 @@ THISCALL_THUNK(PRACXZoomProcessing, PRACXZoomProcessing_Thunk)
 
 // Overrides SMACDrawMap in order to fiddle with some variables if This == pMain.
 //
-// I don't know what that condition means or what the fiddling is for.
+// If This == pMain, edit map drawing related variables, then call SMAC's
+// DrawMap, then restore the original variables. You'll have to look at the
+// decompilation of DrawMap to understand what's going on here.
+//
+// Scient's decompilation possibly explains the CMap struct enough for you to
+// just read that.
+//
+// I don't know when This would not be pMain. Perhaps for the minimap?
 int __stdcall PRACXDrawMap(CMain* This, int iOwner, int fUnitsOnly)
 {
 	int iRet;
@@ -1679,6 +1686,7 @@ int __stdcall PRACXDrawMap(CMain* This, int iOwner, int fUnitsOnly)
 	if (This == m_pAC->pMain)
 	{
 
+		// Save these values to restore them later
 		int iMapPixelLeft = This->oMap.iMapPixelLeft;
 		int iMapPixelTop = This->oMap.iMapPixelTop;
 		int iMapTileLeft = This->oMap.iMapTileLeft;
@@ -1687,6 +1695,8 @@ int __stdcall PRACXDrawMap(CMain* This, int iOwner, int fUnitsOnly)
 		int iMapTilesOddY = This->oMap.iMapTilesOddY;
 		int iMapTilesEvenX = This->oMap.iMapTilesEvenX;
 		int iMapTilesEvenY = This->oMap.iMapTilesEvenY;
+
+		// These are just aliased to save typing and are not modified
 		int mx = *m_pAC->piMaxTileX;
 		int my = *m_pAC->piMaxTileY;
 
@@ -1724,8 +1734,10 @@ int __stdcall PRACXDrawMap(CMain* This, int iOwner, int fUnitsOnly)
 			}
 		}
 
+		// Call SMAC's DrawMap function using our modified This
 		iRet = m_pAC->pfncDrawMap(This, iOwner, fUnitsOnly);
 
+		// Restore This's original values
 		This->oMap.iMapPixelLeft = iMapPixelLeft;
 		This->oMap.iMapPixelTop = iMapPixelTop;
 		This->oMap.iMapTileLeft = iMapTileLeft;
