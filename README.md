@@ -28,7 +28,7 @@ PRACX implements these improvements to the UI:
 
 ## Configuration
 
-PRACX will create it's own settings section in `Alpha Centauri.Ini`. Settings are generally configurable from the in-game menu too and will be reflected in this file.
+PRACX will create it's own settings section in `Alpha Centauri.Ini` if it doesn't exist. Settings are generally configurable from the in-game menu too and will be reflected in this file.
 
 Here's an example with some settings changed:
 
