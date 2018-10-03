@@ -6,22 +6,24 @@ PRACX implements these improvements to the UI:
 
  - Configurable full screen resolution
  - Working windowed mode
+ 	- Toggle with <kbd>alt</kbd>+<kbd>enter</kbd>
  - Custom menu for PRACX options
- - Mouse over support for view mode (V)
+ - Mouse over support for view mode <kbd>V</kbd>
  - Scrolling
 	 - Pixel level scrolling
 	 - Right click and drag scrolling
 	 - Configurable edge scroll zone size and speed
  - Zooming
 	 - Pixel-level re-centering: no more screen zigzag
-	 - Automatically sets reasonable min, max, and increment values for the current resolution
+	 - Right-click and drag scrolling
 	 - Mouse wheel zooms in and out
+	 - Automatically sets reasonable min, max, and increment values for the current resolution
 	 - Configurable # of increments between min and max zoom
 	 - Details (units, cities, improvements, etc.) are now shown even when fully zoomed out
  - Overlays
-	 - Resource overlay with ALT+R: normal/current yield of tile/potential yield
-	 - Terrain overlay with ALT+T: normal/faction ownership/elevation/rainfall/rockiness
-	 - City mode: unworked tiles show potential yield in grey
+	 - Resource overlay with <kbd>ALT</kbd>+<kbd>R</kbd>: normal/current yield of tile/potential yield
+	 - Terrain overlay with <kbd>ALT</kbd>+<kbd>T</kbd>: normal/faction ownership/elevation/rainfall/rockiness
+	 - City mode: unworked tiles show potential yield in a translucent outline (configurable)
 
 
 ## Building
@@ -35,8 +37,9 @@ I install msys2 and use a unix-like terminal to do development. When things are
 working correctly, all you need to do is `make`, and the binaries and installer
 will be generated in `./bin` for you.
 
-Unfortunately, the build system is fragile and probably won't work out of the
-box.
+Unfortunately, the build system is fragile and may not work for you without
+fiddling with MSVC. As a first port of call, check that the path in
+msbuild.workaround is correct for your machine then read on.
 
 ### Compiling
 
@@ -60,6 +63,8 @@ If you don't like make, just point NSIS at the script in InstallScript.
 
 
 ## Code overview
+
+From shared/pracx.cpp:
 
 This library is intended to be imported by the SMAC binary and to then cause
 SMAC to call functions in this library, sometimes instead of certain of its
