@@ -1,6 +1,10 @@
 PRACX Change Log
 ================
 
+v1.11 (03/10/2018)
+==================
+* Feature: pracxpatch now patches terranx_mod.exe (induktio's Thinker Mod binary) if present
+
 v1.10 (10/18/2017)
 ==================
 * Fix: use current rather than registry display settings

@@ -8,8 +8,8 @@
 
 !define APP_NAME "PRACX"
 #!define WEB_SITE "http://www.civgaming.net/forums/"
-!define VERSION "01.10.00.00"
-!define VERSION_SHRT "1.10"
+!define VERSION "01.11.00.00"
+!define VERSION_SHRT "1.11"
 !define REG_ROOT "HKLM"
 !define REG_APP_PATH "Software\Microsoft\DirectPlay\Applications"
 #!define REG_GOG_PATH "Software\GOG.com"
