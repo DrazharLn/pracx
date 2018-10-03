@@ -15,9 +15,6 @@
 #include <commctrl.h>
 #include <vector>
 
-// TODO: PR's usage of std:: is inconsistant. Sometimes it's used when it's not needed in this file.
-using namespace std;
-
 // {{{ In-game options screen
 
 enum SETTING_CONTROLS_E {
@@ -361,7 +358,7 @@ public:
 	}
 	~CSettingsWnd()
 	{
-		for (std::vector<CControl*>::iterator c = m_vpControls.begin(); c != m_vpControls.end(); c++)
+		for (vector<CControl*>::iterator c = m_vpControls.begin(); c != m_vpControls.end(); c++)
 			delete *c;
 
 		if (m_pSettings)
@@ -380,7 +377,7 @@ private:
 	static HINSTANCE m_hInstance;
 	static char* m_pszClassName;
 	
-	std::vector<CControl*> m_vpControls;
+	vector<CControl*> m_vpControls;
 	HWND m_hwndParent = 0;
 
 	static void Register()
@@ -430,7 +427,7 @@ private:
 			case OK_ID:
 				if (m_pSettings)
 				{
-					for (std::vector<CControl*>::iterator c = m_vpControls.begin(); c != m_vpControls.end(); c++)
+					for (vector<CControl*>::iterator c = m_vpControls.begin(); c != m_vpControls.end(); c++)
 						(*c)->OnOK();
 					m_pSettings->Save();
 				}
@@ -460,7 +457,7 @@ private:
 			return 0;
 		}
 
-		for (std::vector<CControl*>::iterator c = m_vpControls.begin(); c != m_vpControls.end(); c++)
+		for (vector<CControl*>::iterator c = m_vpControls.begin(); c != m_vpControls.end(); c++)
 		{
 			if ((*c)->ProcMessage(hwnd, msg, wParam, lParam, &lRet))
 				return lRet;
@@ -676,14 +673,14 @@ int CSettings::ReadIniInt(char* pszKey, int iDefault, int iMax, int iMin)
 // Read string from AC.ini, if the key doesn't exist, write it as "<DEFAULT>" so user knows they can change it.
 //
 // We write "<DEFAULT>" rather than the real value so we don't bake old defaults into Ini files.
-std::string CSettings::ReadIniString(char* pszKey, std::string defaultString)
+string CSettings::ReadIniString(char* pszKey, string defaultString)
 {
 	char szValue[1024] = { 0 };
 	
 	GetPrivateProfileString("PRACX", pszKey, "", szValue, sizeof(szValue) - 1, ".\\Alpha Centauri.ini");
 	szValue[sizeof(szValue)-1] = 0;
 
-	std::string sRet(szValue);
+	string sRet(szValue);
 
 	if (sRet == "") 
 	{
@@ -713,7 +710,7 @@ void CSettings::WriteIniInt(char* pszKey, int iValue, int iDefault)
 	WritePrivateProfileString("PRACX", pszKey, szValue, ".\\Alpha Centauri.ini");
 }
 
-void CSettings::WriteIniString(char* pszKey, std::string value, std::string defaultvalue)
+void CSettings::WriteIniString(char* pszKey, string value, string defaultvalue)
 {
 	if (value == defaultvalue)
 		value = "<DEFAULT>";

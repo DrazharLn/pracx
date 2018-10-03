@@ -16,6 +16,8 @@
 #define DEFAULT_MOUSE_OVER_TILE_INFO	1
 #define DEFAULT_SHOW_UNWORKED			1
 
+using namespace std;
+
 // Logs
 //
 // https://stackoverflow.com/questions/1644868/c-define-macro-for-debug-printing#1644898
@@ -24,9 +26,9 @@
 #define DEBUG 1
 #define log(msg) \
 	do { if (DEBUG) {\
-		std::ofstream logfile;\
-		logfile.open("pracx.log", std::ios::app);\
-		logfile << GetTickCount() << ":" << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\t" << msg << std::endl;\
+		ofstream logfile;\
+		logfile.open("pracx.log", ios::app);\
+		logfile << GetTickCount() << ":" << __FILE__ << ":" << __LINE__ << ":" << __func__ << "\t" << msg << endl;\
 		logfile.close();\
 	} } while (0)
 
@@ -51,7 +53,7 @@ public:
 
 	void* m_pWin = NULL;
 
-	std::string m_szMoviePlayerCommand = std::string(".\\movies\\playuv15.exe -software");
+	string m_szMoviePlayerCommand = string(".\\movies\\playuv15.exe -software");
 
 	bool Load();
 	void Save();
@@ -64,9 +66,9 @@ public:
 	static bool IsEnabled();
 
 private:
-	const std::string DEFAULT_MOVIE_PLAYER_COMMAND = std::string(".\\movies\\playuv15.exe -software");
+	const string DEFAULT_MOVIE_PLAYER_COMMAND = string(".\\movies\\playuv15.exe -software");
 	static int ReadIniInt(char* pszKey, int iDefault = 0, int iMax = 0, int iMin = 0);
 	static void WriteIniInt(char* pszKey, int iValue, int iDefault = 0);
-	static void WriteIniString(char* pszKey, std::string value, std::string defaultvalue);
-	static std::string ReadIniString(char* pszKey, std::string szDefault);
+	static void WriteIniString(char* pszKey, string value, string defaultvalue);
+	static string ReadIniString(char* pszKey, string szDefault);
 };
