@@ -7,12 +7,17 @@ NSIS=makensis
 
 DEPLOYPATH="/d/Other games/SMAC-git"
 
-.PHONY: release installer deploy test testpath clean
+.PHONY: pracx installer deploy test testpath clean
 
-all: release installer
+all: pracx installer
 
-release:
+pracx: bin/prax.dll bin/prac.dll
+
+bin/prac.dll bin/prax.dll bin/pracxpatch.exe: $(shell find shared pracxpatch -type f)
 	$(MSBUILD) pracx.sln /v:m /m /p:Configuration=Release
+	# MSBUILD won't touch the timestamps if it doesn't need to update the
+	# files, which confuses make.
+	touch bin/prac.dll bin/prax.dll bin/pracxpatch.exe
 
 installer: 
 	$(NSIS) //V1 InstallScript/PRACX.nsi
@@ -20,10 +25,10 @@ installer:
 deploy:
 	cp bin/prax.dll bin/prac.dll bin/pracxpatch.exe resources/Icons.pcx $(DEPLOYPATH)
 
-test: deploy
+test: pracx deploy
 	bash -c 'cd $(DEPLOYPATH); ./terranx'
 
-testpatch: deploy
+testpatch: bin/pracxpatch deploy
 	bash -c 'cd $(DEPLOYPATH); ./pracxpatch'
 
 clean:
