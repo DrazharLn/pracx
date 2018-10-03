@@ -26,6 +26,31 @@ PRACX implements these improvements to the UI:
 	 - City mode: unworked tiles show potential yield in a translucent outline (configurable)
 
 
+## Configuration
+
+PRACX will create it's own settings section in `Alpha Centauri.Ini`. Settings are generally configurable from the in-game menu too and will be reflected in this file.
+
+Here's an example with some settings changed:
+
+```ini
+[PRACX]
+Disabled=<DEFAULT>
+WindowWidth=1920
+WindowHeight=1080
+ZoomLevels=<DEFAULT>
+ScrollMin=<DEFAULT>
+ScrollMax=<DEFAULT>
+ScrollArea=<DEFAULT>
+MouseOverTileInfo=<DEFAULT>
+ShowUnworkedCityResources=<DEFAULT>
+ListScrollLines=<DEFAULT>
+ZoomedOutShowDetails=<DEFAULT>
+MoviePlayerCommand=test.bat
+ScreenWidth=<DEFAULT>
+ScreenHeight=<DEFAULT>
+```
+
+
 ## Building
 
 This needs to be built with Visual Studio, or some compiler with equivalent
