@@ -13,6 +13,7 @@ PRACX implements these improvements to the UI:
 	 - Pixel level scrolling
 	 - Right click and drag scrolling
 	 - Configurable edge scroll zone size and speed
+	 - Mouse wheel scrolls in menus
  - Zooming
 	 - Pixel-level re-centering: no more screen zigzag
 	 - Right-click and drag scrolling
@@ -22,8 +23,27 @@ PRACX implements these improvements to the UI:
 	 - Details (units, cities, improvements, etc.) are now shown even when fully zoomed out
  - Overlays
 	 - Resource overlay with <kbd>ALT</kbd>+<kbd>R</kbd>: normal/current yield of tile/potential yield
+	 	- Potential yield is the nutrient output with a farm + mineral output with a mine + energy output with solar panels
+		- Yields are displayed as though for a faction with no max resource limits to make it easier to plan where to place your bases
 	 - Terrain overlay with <kbd>ALT</kbd>+<kbd>T</kbd>: normal/faction ownership/elevation/rainfall/rockiness
 	 - City mode: unworked tiles show potential yield in a translucent outline (configurable)
+	 - Existing terrain survey mode <kbd>T</kbd> has an extra mode: where only fungus and forests are hidden
+
+PRACX is a patch for the Windows version of the game, but it runs fine under Wine (better than under windows 10 for some people!). The [unofficially patched](http://alphacentauri2.info/wiki/Installation#Improving_your_game) Windows version running under Wine is a better experience than the old GNU/Linux port, in my opinion, anyway. Similarly for other OSs.
+
+
+## Install
+
+You must install this over a version of the .exe that has had the DRM removed. Any of the [unofficial patches](http://alphacentauri2.info/wiki/Installation#Improving_your_game) will do.
+
+Download the latest installer from the [releases page](https://github.com/DrazharLn/pracx/releases). You'll want `PRACX.v1.11.exe` or something similar. Running the installer puts our `.dll`s in your SMAC folder, patches SMAC's binary to use them and re-enables <kdb>alt</kbd>+<kbd>tab</kbd> if it has been disabled (as it is by the GOG installer).
+
+The installer makes backups of files it replaces in `_backup_v{version number}`.
+
+
+## Uninstall
+
+The entire patch may be temporarily disabled by setting `Disabled=1` in the `[PRACX]` section of `Alpha Centauri.Ini` in the application's directory.  It may be permanently disabled by deleting `prac.dll` and `prax.dll` in the application's directory or by running the uninstaller.
 
 
 ## Configuration
@@ -50,8 +70,16 @@ ScreenWidth=<DEFAULT>
 ScreenHeight=<DEFAULT>
 ```
 
+## Troubleshooting
 
-## Building
+SMAC and perhaps especially PRACX may work badly on Windows 10 Creators Update. Make sure you [enable DirectPlay](https://windowsforum.com/threads/turn-on-direct-play-to-use-older-games-windows-8-8-1-1-and-10.205952/).
+
+
+## Development
+
+You don't need to read this if you just want to use the patch ;)
+
+### Building
 
 This needs to be built with Visual Studio, or some compiler with equivalent
 inline ASM semantics (not gcc). Because Microsoft don't have a stable
@@ -66,7 +94,7 @@ Unfortunately, the build system is fragile and may not work for you without
 fiddling with MSVC. As a first port of call, check that the path in
 msbuild.workaround is correct for your machine then read on.
 
-### Compiling
+#### Compiling
 
 The easiest way to build is to download the latest version of visual studio and
 install the C++ and XP tools, import the project and make sure the platform
@@ -79,7 +107,7 @@ and run `msbuild path/to/project`.
 I take the path from the developer command prompt and use it in
 msbuild.workaround, which is used by the Makefile.
 
-### Packaging (installer)
+#### Packaging (installer)
 
 PRACX is packaged with NSIS. The makefile knows how to do this and will emit an
 installer in ./bin, if makensis exists on your PATH.
@@ -87,7 +115,7 @@ installer in ./bin, if makensis exists on your PATH.
 If you don't like make, just point NSIS at the script in InstallScript.
 
 
-## Code overview
+### Code overview
 
 From shared/pracx.cpp:
 
