@@ -19,10 +19,10 @@ bin/prac.dll bin/prax.dll bin/pracxpatch.exe: $(shell find shared pracxpatch -ty
 	# files, which confuses make.
 	touch bin/prac.dll bin/prax.dll bin/pracxpatch.exe
 
-installer: 
+installer: pracx
 	$(NSIS) //V1 InstallScript/PRACX.nsi
 
-deploy:
+deploy: pracx
 	cp bin/prax.dll bin/prac.dll bin/pracxpatch.exe resources/Icons.pcx $(DEPLOYPATH)
 
 test: pracx deploy
