@@ -99,7 +99,7 @@ __declspec(naked) void PRACXHookModelSMAX(void)
 	}
 }
 
-int PRACXHookFile(char* pszFileName, int iType)
+int PRACXHookFile(char* pszFileName, int isSMAX)
 {
 #define SMAC_HOOKADDRESS     0x006A6000
 #define SMAC_LOADADDRESS     0x0068A160
@@ -116,7 +116,7 @@ int PRACXHookFile(char* pszFileName, int iType)
 
 	HANDLE hOut;
 
-	if (iType == 0)
+	if (!isSMAX)
 	{
 		AC_LOADADDRESS = SMAC_LOADADDRESS;
 		AC_IMAGEBASE = SMAC_IMAGEBASE;
@@ -149,7 +149,7 @@ int PRACXHookFile(char* pszFileName, int iType)
 	CloseHandle(hOut);
 
 	char* pDest = &pBuffer[AC_LOADADDRESS - AC_IMAGEBASE];
-	char* pSource = (char*)((iType == 0) ? PRACXHookModelSMAC : PRACXHookModelSMAX);
+	char* pSource = (char*)((isSMAX) ? PRACXHookModelSMAX : PRACXHookModelSMAC);
 
 	int iLen;
 
@@ -204,39 +204,29 @@ int PRACXHookFile(char* pszFileName, int iType)
 }
 
 
+void patch(char * filename, char * name, int isSMAX) {
+	char buf[200];
+	if (!GetFileExists(filename)) {
+		snprintf(buf, 200, "No %s found to patch.", name);
+		MessageBox(NULL, buf, "Not Found", MB_OK);
+	} else
+		if (!PRACXHookFile(filename, isSMAX)) {
+			snprintf(buf, 200, "Error patching %s.", name);
+			MessageBox(NULL, buf, "Error", MB_OK);
+		} else {
+			snprintf(buf, 200, "%s patched successfully.", name);
+			MessageBox(NULL, buf, "Success", MB_OK);
+		}
+}
+
 
 int main(int argc, char* argv[])
 {
-	if (!GetFileExists("terran.exe"))
-	{
-		MessageBox(NULL, "No Alpha Centauri found to patch.", "Not Found", MB_OK);
-	}
-	else
-	{
-		int r = PRACXHookFile("terran.exe", 0);
-
-		if (!r)
-			MessageBox(NULL, "Error patching Alpha Centauri.", "Error", MB_OK);
-		else
-			MessageBox(NULL, "Alpha Centauri patched successfully.", "Success", MB_OK);
-
-	}
-
-	if (!GetFileExists("terranx.exe"))
-	{
-		MessageBox(NULL, "No Alien Crossfile found to patch.", "Not Found", MB_OK);
-	}
-	else
-	{
-		int r = PRACXHookFile("terranx.exe", 1);
-
-		if (!r)
-			MessageBox(NULL, "Error patching Alien Crossfile.", "Error", MB_OK);
-		else
-			MessageBox(NULL, "Alien Crossfile patched successfully.", "Success", MB_OK);
-
-	}
-		
+	patch("terran.exe", "Alpha Centauri", FALSE);
+	patch("terranx.exe", "Alien Crossfire", TRUE);
+	// Don't alert users that they don't have Thinker
+	if (GetFileExists("terranx_mod.exe"))
+		patch("terranx_mod.exe", "Alien Crossfire (Thinker mod)", TRUE);
 	return 0;
 }
 

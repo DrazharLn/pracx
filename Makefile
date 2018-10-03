@@ -7,7 +7,7 @@ NSIS=makensis
 
 DEPLOYPATH="/d/Other games/SMAC-git"
 
-.PHONY: release installer
+.PHONY: release installer deploy test testpath clean
 
 all: release installer
 
@@ -18,10 +18,13 @@ installer:
 	$(NSIS) //V1 InstallScript/PRACX.nsi
 
 deploy:
-	cp bin/prax.dll bin/prac.dll resources/Icons.pcx $(DEPLOYPATH)
+	cp bin/prax.dll bin/prac.dll bin/pracxpatch.exe resources/Icons.pcx $(DEPLOYPATH)
 
-test:
+test: deploy
 	bash -c 'cd $(DEPLOYPATH); ./terranx'
+
+testpatch: deploy
+	bash -c 'cd $(DEPLOYPATH); ./pracxpatch'
 
 clean:
 	rm -rf obj/* bin/* Debug/*
