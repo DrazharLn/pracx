@@ -23,7 +23,7 @@ using namespace std;
 // https://stackoverflow.com/questions/1644868/c-define-macro-for-debug-printing#1644898
 		/* fprintf(logfile, "%s:%d:%s(): " fmt, __FILE__, \ */
 		/* 		__LINE__, __func__, __VA_ARGS__);\ */
-#define DEBUG 1
+#define DEBUG 0
 #define log(msg) \
 	do { if (DEBUG) {\
 		ofstream logfile;\
