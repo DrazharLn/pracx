@@ -2329,6 +2329,26 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 		return;
 	}
 
+	// {{{ Misc. setup
+	
+	// Store hlib for PRACXFreeLib
+	m_hlib = hLib;
+
+	// Set up the window.
+	SetVideoMode();
+	SetRect(&m_rWindowedRect, 0, 0, m_ST.m_ptWindowSize.x, m_ST.m_ptWindowSize.y);
+
+	// Zero our sprite arrays
+	memset(m_astGrayResourceSprites, 0, sizeof(m_astGrayResourceSprites));
+	memset(m_aimgElevation, 0, sizeof(m_aimgElevation));
+	memset(m_aimgFactionColors, 0, sizeof(m_aimgFactionColors));
+	memset(m_aimgRaininess, 0, sizeof(m_aimgRaininess));
+	memset(m_aimgRockiness, 0, sizeof(m_aimgRockiness));
+
+	// }}}
+
+	// {{{ Fiddle with SMAC's memory.
+
 	typedef struct PRACXHOOK_S {
 		int   iAddress;
 		void* pFunction;
@@ -2399,7 +2419,15 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 		{ _cx(0x0068B3D4, 0x00669394), PRACXGetSaveFileName, (void**)&pfncGetSaveFileName }
 	};
 	
-	// Direct memory overwrites, string or int 
+	// Direct memory overwrites, char* for multiple byte changes, uint for single byte changes.
+	//
+	// Single byte changes are special cased so that pointers to our functions can be easily
+	// inserted (it's more faff to cast a function pointer to a uint, then convert to a char*).
+	//
+	// These cases could be covered in astApi, but:
+	//   1) astApi wants to store the old address somewhere;
+	//   2) I think that a semantically different thing is happening (i.e. this is replacing which
+	//      function pointer is given to the windows API for winproc).
 	PRACXCHANGE_T m_astChanges[] = {
 		{ _cx(0x005EEA90, 0x005D5C70), NULL, (UINT)PRACXWinProc, 4 }, // Redirect WinProc
 		{ _cx(0x0060900B, 0x005F018B), NULL, 0xE8, 1 }, // Redirect BitBlt for Window
@@ -2454,48 +2482,37 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 		_cx(0x00472992, 0x00466116),
 		_cx(0x00472A43, 0x00466447)
 	};
-	
-	DWORD dwOld;
-	DWORD dwOld2;
 
-	m_hlib = hLib;
-
-	SetVideoMode();
-
-	SetRect(&m_rWindowedRect, 0, 0, m_ST.m_ptWindowSize.x, m_ST.m_ptWindowSize.y);
-
-	memset(m_astGrayResourceSprites, 0, sizeof(m_astGrayResourceSprites));
-	memset(m_aimgElevation, 0, sizeof(m_aimgElevation));
-	memset(m_aimgFactionColors, 0, sizeof(m_aimgFactionColors));
-	memset(m_aimgRaininess, 0, sizeof(m_aimgRaininess));
-	memset(m_aimgRockiness, 0, sizeof(m_aimgRockiness));
-
+	DWORD dwOrigProtection;
+	DWORD dwOrigProtection2;
 	// Make SMAC memory writable and then overwrite a bunch of it.
-	if (VirtualProtect((LPVOID)0x401000, _cx(0x285000, 0x263000), PAGE_EXECUTE_READWRITE, &dwOld) &&
-		VirtualProtect((LPVOID)_cx(0x68B000, 0x669000), _cx(0x1B000, 0x19000), PAGE_READWRITE, &dwOld2) )
+	if (VirtualProtect((LPVOID)0x401000, _cx(0x285000, 0x263000), PAGE_EXECUTE_READWRITE, &dwOrigProtection) &&
+		VirtualProtect((LPVOID)_cx(0x68B000, 0x669000), _cx(0x1B000, 0x19000), PAGE_READWRITE, &dwOrigProtection2) )
 	{
 		// Override API calls (absolute jumps) in SMAC by replacing the absolute address with the address of our functions.
 		for (int i = 0; i < sizeof(m_astApi) / sizeof(m_astApi[0]); i++)
 		{
-			// TODO: fix this comment.
-			// Point our local definitions of the SMAC API calls
-			// (which currently just == NULL), to the real
-			// addresses of the API calls (in the Windows API,
-			// etc).
+			// Point our local definitions of the SMAC API calls (which
+			// currently just == NULL), to the real addresses of the API calls
+			// (in the Windows API, etc).  
+			//
+		    // Dereference e.g. pfncCreateWindowEx and set it as the address SMAC has.
 			*m_astApi[i].ppOldFunction = (void*)*(int*)m_astApi[i].iAddress;
-			// Make SMAC call the functions in this file instead of the remote APIs.
+
+			// Then make SMAC call our functions for these APIs instead.
+			// 
+			// Interpret the address as a pointer and dereference it. i.e. write to the address iAddress.
 			*(int*)m_astApi[i].iAddress = (int)m_astApi[i].pNewFunction;
 		}
 		
 		// Override near/relative JMP calls in SMAC by calculating the offset to our functions, then replacing the JMP.
 		for (int i = 0; i < sizeof(m_astHooks) / sizeof(m_astHooks[0]); i++)
 		{
-
 			int iOffset = (int)m_astHooks[i].pFunction - (m_astHooks[i].iAddress + 4);
 			*(int*)m_astHooks[i].iAddress = iOffset;
 		}
 
-		// Override other bits of the code.
+		// Replace arbitrary bytes in SMAC
 		for (int i = 0; i < sizeof(m_astChanges) / sizeof(m_astChanges[0]); i++)
 		{
 			if (m_astChanges[i].pacNewValue)
@@ -2517,9 +2534,11 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 		}
 
 		// Set the memory regions back to whatever level of permission they were at originally.
-		VirtualProtect((LPVOID)0x401000, _cx(0x285000, 0x263000), dwOld, &dwOld);
-		VirtualProtect((LPVOID)_cx(0x68B000, 0x669000), _cx(0x1B000, 0x19000), dwOld2, &dwOld2);
+		VirtualProtect((LPVOID)0x401000, _cx(0x285000, 0x263000), dwOrigProtection, &dwOrigProtection);
+		VirtualProtect((LPVOID)_cx(0x68B000, 0x669000), _cx(0x1B000, 0x19000), dwOrigProtection2, &dwOrigProtection2);
 	}
+
+	// }}}
 }
 
 // Entry point for this library. If the settings file says enabled, continue loading the library, else return false (SMAC will detach).
@@ -2546,3 +2565,4 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
+// vi:ts=4
