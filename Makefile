@@ -26,7 +26,7 @@ deploy: pracx
 	cp bin/prax.dll bin/prac.dll bin/pracxpatch.exe resources/Icons.pcx $(DEPLOYPATH)
 
 test: pracx deploy
-	bash -c 'cd $(DEPLOYPATH); ./terranx'
+	bash -c 'cd $(DEPLOYPATH);sed 's/DisableOpeningMovie=0/DisableOpeningMovie=1/' Alpha\ Centauri.Ini -i; cmd //K terranx <<< "exit"' 
 
 testpatch: bin/pracxpatch deploy
 	bash -c 'cd $(DEPLOYPATH); ./pracxpatch'
