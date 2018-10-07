@@ -2075,9 +2075,11 @@ _declspec(naked) void PRACXDrawResource_Thunk(void)
 	}
 }
 
-// Load up some member variables for use in PRACXDrawTileDraw. Don't know why
-// this approach was taken here rather than making a function call in ASM as
-// elsewhere.
+// Load up some member variables for use in PRACXDrawTileDraw.
+// 
+// This thunk is patched into MapWin::gen_terrain_poly() replacing a call to
+// some unknown library. Presumably that call was unimportant or PRACX makes it
+// somewhere else.
 __declspec(naked) void PRACXDrawTile_Thunk(void)
 {
 #define DTT_iTileX	dword ptr [ebp+20h]
@@ -2091,6 +2093,7 @@ __declspec(naked) void PRACXDrawTile_Thunk(void)
 		MOV EAX, DTT_pMain
 		MOV [m_pDrawTileMain], EAX
 
+		// I don't know what this is about. Faking the return of the old function?
 		MOV EAX, ECX
 		MOV dword ptr[EAX], 0
 
