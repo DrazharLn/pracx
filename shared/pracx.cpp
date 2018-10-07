@@ -2492,7 +2492,7 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 	if (VirtualProtect((LPVOID)0x401000, _cx(0x285000, 0x263000), PAGE_EXECUTE_READWRITE, &dwOrigProtection) &&
 		VirtualProtect((LPVOID)_cx(0x68B000, 0x669000), _cx(0x1B000, 0x19000), PAGE_READWRITE, &dwOrigProtection2) )
 	{
-		// Override API calls (absolute jumps) in SMAC by replacing the absolute address with the address of our functions.
+		// Override API references (`extrn`s) in SMAC by replacing the addresses
 		for (int i = 0; i < sizeof(m_astApi) / sizeof(m_astApi[0]); i++)
 		{
 			// Point our local definitions of the SMAC API calls (which
@@ -2529,6 +2529,7 @@ __declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
 		{
 			for (int i = 0; i < sizeof(m_aiZoomDetailChanges) / sizeof(m_aiZoomDetailChanges[0]); i++)
 			{
+				// Overwrite a single character at addr
 				UCHAR* c = (UCHAR*)m_aiZoomDetailChanges[i];
 				if (*c < 0xF2)
 					*c = 1;
