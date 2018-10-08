@@ -69,10 +69,12 @@ __declspec(naked) void PRACXHookModelSMAX(void)
 {
 	_asm{
 		call	jmp_over
-			_emit 'p'
-			_emit 'r'
+			_emit 'l'
+			_emit 'o'
 			_emit 'a'
-			_emit 'x'
+			_emit 'd'
+			_emit 'e'
+			_emit 'r'
 			_emit '\0'
 		jmp_over:
 		call	ds : _SMAXLoadLibraryA
@@ -80,7 +82,6 @@ __declspec(naked) void PRACXHookModelSMAX(void)
 			jnz		loaded
 			ret
 		loaded :
-		push    eax
 			push	1
 			push    eax
 			call    ds : _SMAXGetProcAddress
@@ -163,7 +164,7 @@ int PRACXHookFile(char* pszFileName, int isSMAX)
 
 	memcpy(pDest, pSource, iLen);
 
-	*((UINT*)&pBuffer[AC_HOOKADDRESS - AC_IMAGEBASE]) = AC_LOADADDRESS;
+	// *((UINT*)&pBuffer[AC_HOOKADDRESS - AC_IMAGEBASE]) = AC_LOADADDRESS;
 
 	char szTmpFileName[1024];
 

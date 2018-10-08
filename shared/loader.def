@@ -1,0 +1,7 @@
+LIBRARY   loader
+EXPORTS  
+   init   @1  
+   redirect_call   @2  
+   replace_extrn   @3  
+   replace_ptr   @4
+   replace_bytes   @5

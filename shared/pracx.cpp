@@ -2323,7 +2323,7 @@ _declspec(naked) void PRACXFreeLib(void)
 }
 
 // Overwrite bits of SMAC's running machine code to make it call out to this library, and some other miscellaneous problems.
-__declspec(dllexport) void __stdcall PRACXHook(HMODULE hLib)
+__declspec(dllexport) void PRACXHook(HMODULE hLib)
 {
 	log("");
 	// If we can't load the settings from Alpha Centauri.ini, don't load this library.
