@@ -79,38 +79,32 @@ SMAC and perhaps especially PRACX may work badly on Windows 10 Creators Update. 
 
 You don't need to read this if you just want to use the patch ;)
 
+### Requirements
+
+You need Microsoft's compiler (`cl.exe`) and "XP Tools".
+
+1. Install VS 2017 Community
+2. Install XP Tools (I installed these with the VS IDE by setting the platform toolset for a "solution" to v141_xp)
+3. Optional: A POSIX environment with make (I use msys2).
+
+This needs to be built with Microsoft's compiler `cl.exe`. It cannot be compiled with gcc because it uses non-standard inline ASM.
+
+
+You need to ensure that the environment variables `PATH`, `INCLUDE` and `LIB` are set correctly if you're using `make`. I use a script to get the correct values from `vsdevcmd.bat`: `bash generate_vsenv`.
+
 ### Building
 
-This needs to be built with Visual Studio, or some compiler with equivalent
-inline ASM semantics (not gcc). Because Microsoft don't have a stable
-commandline API to their compilers, you will likely have to fiddle to get this
-to work.
+When everything is working correctly its just `make` and collect the binaries from `bin/`.
 
-I install msys2 and use a unix-like terminal to do development. When things are
-working correctly, all you need to do is `make`, and the binaries and installer
-will be generated in `./bin` for you.
+If you don't like make then you can set something else up using the Makefile as a build.
 
-Unfortunately, the build system is fragile and may not work for you without
-fiddling with MSVC. As a first port of call, check that the path in
-msbuild.workaround is correct for your machine then read on.
-
-#### Compiling
-
-The easiest way to build is to download the latest version of visual studio and
-install the C++ and XP tools, import the project and make sure the platform
-toolset for each "solution" is set to some XP toolset. For v141_xp, for
-example. Other faffery might be required.
-
-After that you can either build from VS or open the "Developer Command Prompt"
-and run `msbuild path/to/project`.
-
-I take the path from the developer command prompt and use it in
-msbuild.workaround, which is used by the Makefile.
+I've tried to make the build system simple, but building stuff on windows is a bit tricky so you might need to fiddle with MSVC.
+As a first port of call, check that `vsenv` exists and that you can call `cl.exe`.
 
 #### Packaging (installer)
 
 PRACX is packaged with NSIS. The makefile knows how to do this and will emit an
-installer in ./bin, if makensis exists on your PATH.
+installer in `./bin`, if `makensis` exists on your `PATH`.
 
 If you don't like make, just point NSIS at the script in InstallScript.
 

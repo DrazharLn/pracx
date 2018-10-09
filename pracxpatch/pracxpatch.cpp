@@ -12,6 +12,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#pragma comment(lib, "user32.lib")
+
 bool GetFileExists(char* pszFileName)
 {
 	HANDLE hFile = CreateFile(pszFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -156,6 +158,7 @@ int PRACXHookFile(char* pszFileName, int isSMAX)
 
 	for (iLen = 0; 0 != strcmp(&pSource[iLen], "done"); iLen++);
 
+	// If an identical patch is already in place: do nothing.
 	if (0 == memcmp(pSource, pDest, iLen))
 	{
 		delete[] pBuffer;

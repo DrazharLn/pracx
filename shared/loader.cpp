@@ -42,7 +42,7 @@ extern "C" {
 
 typedef void (*patch_init_func_type)(HMODULE self);
 
-DLL_EXPORT int init() {
+LOADER_API int init() {
     log("");
 
     // Load PRACX and call init
@@ -54,19 +54,19 @@ DLL_EXPORT int init() {
     return false;
 }
 
-DLL_EXPORT int redirect_call(int addr, void* func_ptr) {
+LOADER_API int redirect_call(int addr, void* func_ptr) {
     // Override relative JMP or CALLs by calculating the offset to our functions and replacing
     // the operand.
     int offset = (int)func_ptr - (addr + 4); // +4 because displacement relative to next instruction.
     return replace_ptr(addr, (void*)offset);
 }
 
-DLL_EXPORT int replace_extrn(int addr, void* func_ptr) {
+LOADER_API int replace_extrn(int addr, void* func_ptr) {
     // Override API references (`extrn`s) by replacing the addresses.
     return replace_ptr(addr, func_ptr);
 }
 
-DLL_EXPORT int replace_ptr(int addr, void* ptr) {
+LOADER_API int replace_ptr(int addr, void* ptr) {
     if (!register_patch(addr, 4))
         return 0;
 
@@ -79,7 +79,7 @@ DLL_EXPORT int replace_ptr(int addr, void* ptr) {
     return old;
 }
 
-DLL_EXPORT bool replace_bytes(int addr, char* bytes, int len) {
+LOADER_API bool replace_bytes(int addr, char* bytes, int len) {
     // Destination and source must not overlap
     if ((int)bytes > addr && (int)bytes < addr+len)
         return false;

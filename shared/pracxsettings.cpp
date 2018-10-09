@@ -15,6 +15,9 @@
 #include <commctrl.h>
 #include <vector>
 
+#pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "user32.lib")
+
 // {{{ In-game options screen
 
 enum SETTING_CONTROLS_E {

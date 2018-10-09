@@ -1,4 +1,3 @@
 .vs
-bin
-obj
-Debug
+bin/
+build/

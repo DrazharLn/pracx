@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+# Generate `vsenv` a file suitable for sourcing by a POSIX shell that makes the MSVC tools usable.
+
+# Hack: invoke the VS Developer Command Prompt and feed it the command line we need, followed by a newline and exit.
+env -i PATH="$PATH" PATHEXT="$PATHEXT" COMSPEC="$COMSPEC" cmd //K "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat" <<< "bash -c export -p \\> vsenv.tmp"
+
+# Filter vsenv to include only values that matter
+erule() {
+	printf "-e '^declare -x $1=' "
+}
+
+eval grep $(for var in INCLUDE LIB LIBPATH PATH; do erule $var; done) vsenv.tmp > vsenv
+rm vsenv.tmp

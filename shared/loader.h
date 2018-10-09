@@ -10,7 +10,17 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#define DLL_EXPORT __declspec(dllexport)
+// The following ifdef block is the standard way of creating macros which make exporting 
+// from a DLL simpler. All files within this DLL are compiled with the LOADER_EXPORTS
+// symbol defined on the command line. This symbol should not be defined on any project
+// that uses this DLL. This way any other project whose source files include this file see 
+// LOADER_API functions as being imported from a DLL, whereas this DLL sees symbols
+// defined with this macro as being exported.
+#ifdef LOADER_EXPORTS
+#define LOADER_API __declspec(dllexport)
+#else
+#define LOADER_API __declspec(dllimport)
+#endif
 
 typedef struct {
     char* name;
@@ -29,7 +39,7 @@ extern "C" {
  * 	len_patches,
  * 	patches: an array of Patch structs
  */
-DLL_EXPORT int init();
+LOADER_API int init();
 
 /**
  * Replace the destination of an asm `call`.
@@ -38,28 +48,28 @@ DLL_EXPORT int init();
  *
  * @return the old value of `addr` or a fail condition
  */
-DLL_EXPORT int redirect_call(int addr, void* func_ptr);
+LOADER_API int redirect_call(int addr, void* func_ptr);
 
 /**
  * Replace the destination of an asm `extrn`.
  *
  * @return the old `extrn` value
  */
-DLL_EXPORT int replace_extrn(int addr, void* func_ptr);
+LOADER_API int replace_extrn(int addr, void* func_ptr);
 
 /**
  * Replace the contents of `addr` with the value `ptr`.
  *
  * @return the old value of `addr`
  */
-DLL_EXPORT int replace_ptr(int addr, void* ptr);
+LOADER_API int replace_ptr(int addr, void* ptr);
 
 /**
  * Write `bytes` to memory starting at `addr`.
  * 
  * TODO: is there a nice string library that will save users from having to specify their own lengths?
  */
-DLL_EXPORT bool replace_bytes(int addr, char* bytes, int len);
+LOADER_API bool replace_bytes(int addr, char* bytes, int len);
 
 }
 /**
