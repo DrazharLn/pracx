@@ -41,10 +41,17 @@ deploy: pracx
 	cp bin/*.dll bin/pracxpatch.exe resources/Icons.pcx $(DEPLOYPATH)
 
 test: pracx deploy
-	bash -c 'cd $(DEPLOYPATH);sed 's/DisableOpeningMovie=0/DisableOpeningMovie=1/' Alpha\ Centauri.Ini -i; cmd //K terranx <<< "exit 0"' 
+	cd $(DEPLOYPATH) \
+		&& sed 's/DisableOpeningMovie=0/DisableOpeningMovie=1/' Alpha\ Centauri.Ini -i \
+		&& cmd /c terranx
+
+testsmac: pracx deploy
+	cd $(DEPLOYPATH) \
+		&& sed 's/DisableOpeningMovie=0/DisableOpeningMovie=1/' Alpha\ Centauri.Ini -i \
+		&& cmd /c terran
 
 testpatch: bin/pracxpatch.exe deploy
-	bash -c 'cd $(DEPLOYPATH); cmd /c pracxpatch'
+	cd $(DEPLOYPATH) && cmd /c pracxpatch
 
 resetdeployment:
-	bash -c 'cd $(DEPLOYPATH); git reset --hard'
+	cd $(DEPLOYPATH) && git reset --hard
