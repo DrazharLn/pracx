@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+# The eval needs to be translated for bash, I think. You could just write the grep line manually. That would be shorter.
+
 # Generate `vsenv` a file suitable for sourcing by a POSIX shell that makes the MSVC tools usable.
 
 # Hack: invoke the VS Developer Command Prompt and feed it the command line we need, followed by a newline and exit.
