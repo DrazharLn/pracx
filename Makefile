@@ -27,7 +27,7 @@ bin/pracxpatch.exe: Makefile pracxpatch/pracxpatch.cpp
 	mkdir -p build/pracxpatch bin
 	cl -nologo pracxpatch/pracxpatch.cpp -Fo"build/pracxpatch/" -Febin/pracxpatch.exe
 
-installer: pracx
+installer: pracx resources/*
 	$(NSIS) //V1 InstallScript/PRACX.nsi
 
 clean:
