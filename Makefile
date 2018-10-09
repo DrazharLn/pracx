@@ -19,9 +19,9 @@ bin/prac.dll: Makefile shared/pracx.cpp shared/pracxsettings.* shared/wm2str.cpp
 	mkdir -p build/prac bin
 	source ./vsenv && cl -nologo -LD -EHsc shared/pracx.cpp shared/pracxsettings.cpp shared/wm2str.cpp -Fo"build/prac/" -D_SMAC -Fe"bin/prac.dll"
 
-bin/loader.dll: Makefile shared/loader.*
+bin/loader.dll: Makefile loader/loader.*
 	mkdir -p build/loader bin
-	source ./vsenv && cl -nologo shared/loader.cpp -DLOADER_EXPORTS -EHsc -LD -Fo"build/loader" -Febin/loader.dll -link -DEF:shared/loader.def
+	source ./vsenv && cl -nologo loader/loader.cpp -DLOADER_EXPORTS -EHsc -LD -Fo"build/loader/" -Febin/loader.dll -link -DEF:loader/loader.def
 
 bin/pracxpatch.exe: Makefile pracxpatch/pracxpatch.cpp
 	mkdir -p build/pracxpatch bin
