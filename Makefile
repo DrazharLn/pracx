@@ -5,7 +5,7 @@ NSIS=makensis
 
 DEPLOYPATH="/d/Other games/SMAC-git"
 
-.PHONY: pracx installer deploy test testpatch clean resetdeployment
+.PHONY: pracx installer deploy test testpatch clean resetdeployment loader-gcc
 
 all: pracx installer
 
@@ -22,6 +22,10 @@ bin/prac.dll: Makefile shared/pracx.cpp shared/pracxsettings.* shared/wm2str.cpp
 bin/loader.dll: Makefile loader/loader.*
 	mkdir -p build/loader bin
 	source ./vsenv && cl -nologo loader/loader.cpp -DLOADER_EXPORTS -EHsc -LD -Fo"build/loader/" -Febin/loader.dll -link -DEF:loader/loader.def
+
+loader-gcc: Makefile loader/*
+	mkdir -p build/loader bin
+	codeblocks --rebuild loader.cbp --target=Release
 
 bin/pracxpatch.exe: Makefile pracxpatch/pracxpatch.cpp
 	mkdir -p build/pracxpatch bin
