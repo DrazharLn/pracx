@@ -75,6 +75,28 @@ ScreenHeight=<DEFAULT>
 SMAC and perhaps especially PRACX may work badly on Windows 10 Creators Update. Make sure you [enable DirectPlay](https://windowsforum.com/threads/turn-on-direct-play-to-use-older-games-windows-8-8-1-1-and-10.205952/).
 
 
+## More SMACX!
+
+You may also be interested in:
+
+- [The Alphacentauri2.info Wiki][ac2wiki]
+- [The Alphacentauri2.info Forum][ac2forum]
+- [Scient's Unofficial Patch][scient]
+- [Thinker][thinker]
+- [Yitzi's patch][yitzi]
+- [bvanery's SMACX AI Growth mod][aigrowthmod]
+- [The SMAC in SMAX project][smac-in-smax]
+
+[ac2wiki]: http://alphacentauri2.info/wiki/
+[ac2forum]: http://alphacentauri2.info/index.php?action=community
+[pracx]: https://github.com/drazharln/pracx
+[scient]: https://github.com/drazharln/scient-unofficial-smacx-patch
+[thinker]: https://github.com/induktio/thinker
+[yitzi]: http://alphacentauri2.info/wiki/Yitzi%27s_patch
+[aigrowthmod]: http://alphacentauri2.info/index.php?topic=20959.0
+[smac-in-smax]: https://github.com/drazharln/smac-in-smax
+
+
 ## Development
 
 You don't need to read this if you just want to use the patch ;)
