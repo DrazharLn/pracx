@@ -2,8 +2,10 @@
 # MSBUILD=/c/Program\ Files\ \(x86\)/MSBuild/12.0/Bin/MSBuild.exe
 MSBUILD=./msbuild.workaround
 
-# NSIS="/c/Program Files (x86)/NSIS/makensis.exe"
-NSIS=makensis
+NSIS="/c/Program Files (x86)/NSIS/makensis.exe"
+
+# The NSIS from msys2 builds 64 bit installers that aren't compatible with 32 bit systems.
+# NSIS=makensis
 
 DEPLOYPATH="/d/Other games/SMAC-git"
 
